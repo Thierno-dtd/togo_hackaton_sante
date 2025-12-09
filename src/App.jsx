@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './styles/main.css';
 import './styles/animations.css';
+import  './styles/landing.css';
+import LandingPage from './pages/LandingPage';
 
 // ==================== DONNÉES FACTICES ====================
 const MOCK_USERS = {
@@ -154,6 +156,7 @@ const MediConnectApp = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [currentPage, setCurrentPage] = useState('dashboard');
     const [pageTitle, setPageTitle] = useState('Tableau de bord');
+    const [showLanding, setShowLanding] = useState(true);
 
     const handleLogin = (roleKey) => {
         setCurrentUser(MOCK_USERS[roleKey]);
@@ -172,6 +175,10 @@ const MediConnectApp = () => {
         setCurrentPage(pageId);
         setPageTitle(label);
     };
+
+    if (showLanding) {
+        return <LandingPage onNavigateToLogin={() => setShowLanding(false)} />;
+    }
 
     if (!isLoggedIn) {
         return <LoginPage onLogin={handleLogin} />;
