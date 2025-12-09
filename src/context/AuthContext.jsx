@@ -32,25 +32,35 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const login = (roleKey, credentials = {}) => {
-        // Mock authentication
-        const mockUser = MOCK_USERS[roleKey];
+    const login = (credentials = {}) => {
+        const { identifier, password } = credentials;
 
-        if (mockUser) {
-            const userWithTimestamp = {
-                ...mockUser,
-                loginTime: new Date().toISOString()
-            };
+        // Chercher dans mock users selon ID ou email
+        const mockUser = Object.values(MOCK_USERS).find(
+            (u) =>
+                u.id === identifier ||
+                u.email === identifier
+        );
 
-            setUser(userWithTimestamp);
-            setIsAuthenticated(true);
-            localStorage.setItem('mediconnect_user', JSON.stringify(userWithTimestamp));
-
-            return { success: true, user: userWithTimestamp };
+        if (!mockUser) {
+            return { success: false, error: 'Invalid credentials' };
         }
 
-        return { success: false, error: 'Invalid credentials' };
+        // Tu peux ajouter ici une vérification de mot de passe
+        // pour le moment tout passe en mock
+
+        const userWithTimestamp = {
+            ...mockUser,
+            loginTime: new Date().toISOString()
+        };
+
+        setUser(userWithTimestamp);
+        setIsAuthenticated(true);
+        localStorage.setItem('mediconnect_user', JSON.stringify(userWithTimestamp));
+
+        return { success: true, user: userWithTimestamp };
     };
+
 
     const logout = () => {
         setUser(null);

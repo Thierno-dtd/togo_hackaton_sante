@@ -54,7 +54,7 @@ const AppRoutes = () => {
 
             {/* Protected routes */}
             <Route
-                path="/*"
+                path="/"
                 element={
                     <ProtectedRoute>
                         <MainLayout />

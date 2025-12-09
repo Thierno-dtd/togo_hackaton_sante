@@ -19,7 +19,7 @@ const LoginPage = () => {
         setLoading(true);
 
         try {
-            const result = login(selectedRole, credentials);
+            const result = login(credentials);
 
             if (result.success) {
                 navigate('/dashboard');
@@ -32,6 +32,7 @@ const LoginPage = () => {
             setLoading(false);
         }
     };
+
 
     const handleBackToHome = () => {
         navigate('/');
@@ -86,32 +87,7 @@ const LoginPage = () => {
                             </div>
                         )}
 
-                        <div className="user-type-selector">
-                            <div
-                                className={`user-type-btn ${selectedRole === 'patient' ? 'active' : ''}`}
-                                onClick={() => setSelectedRole('patient')}
-                            >
-                                <i className="fas fa-user-injured"></i> Patient
-                            </div>
-                            <div
-                                className={`user-type-btn ${selectedRole === 'medecin' ? 'active' : ''}`}
-                                onClick={() => setSelectedRole('medecin')}
-                            >
-                                <i className="fas fa-user-md"></i> Médecin
-                            </div>
-                            <div
-                                className={`user-type-btn ${selectedRole === 'pharmacien' ? 'active' : ''}`}
-                                onClick={() => setSelectedRole('pharmacien')}
-                            >
-                                <i className="fas fa-prescription-bottle-alt"></i> Pharmacien
-                            </div>
-                            <div
-                                className={`user-type-btn ${selectedRole === 'admin' ? 'active' : ''}`}
-                                onClick={() => setSelectedRole('admin')}
-                            >
-                                <i className="fas fa-cog"></i> Admin
-                            </div>
-                        </div>
+
 
                         <div className="form-group">
                             <label htmlFor="login-id">Identifiant unique</label>
