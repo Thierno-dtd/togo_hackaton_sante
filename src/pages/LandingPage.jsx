@@ -1,6 +1,11 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = ({ onNavigateToLogin }) => {
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
     return (
         <div id="landing-page">
             <header>
@@ -18,7 +23,10 @@ const LandingPage = ({ onNavigateToLogin }) => {
                             <a href="#about">À propos</a>
                             <a href="#contact">Contact</a>
                         </div>
-                        <button className="btn btn-primary" onClick={onNavigateToLogin}>
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => navigate('/login')}
+                        >
                             Connexion
                         </button>
                     </nav>
@@ -34,7 +42,10 @@ const LandingPage = ({ onNavigateToLogin }) => {
                             Optimisez la continuité des soins grâce à l'IA et à la collaboration en temps réel.
                         </p>
                         <div className="cta-buttons">
-                            <button className="btn btn-primary" onClick={onNavigateToLogin}>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => navigate('/login')}
+                            >
                                 Démarrer maintenant
                             </button>
                             <a href="#features" className="btn btn-outline">
@@ -175,7 +186,10 @@ const LandingPage = ({ onNavigateToLogin }) => {
                         Rejoignez la révolution MediConnect et bénéficiez d'une plateforme sécurisée, intuitive et collaborative.
                     </p>
                     <div className="cta-buttons fade-in-delay-2">
-                        <button className="btn btn-secondary" onClick={onNavigateToLogin}>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => navigate('/login')}
+                        >
                             S'inscrire maintenant
                         </button>
                         <a href="#contact" className="btn btn-outline">Nous contacter</a>
@@ -203,8 +217,8 @@ const LandingPage = ({ onNavigateToLogin }) => {
                             <h4>Contact</h4>
                             <div className="footer-links">
                                 <a href="mailto:contact@mediconnect.com">contact@mediconnect.com</a>
-                                <a href="tel:+33123456789">+33 1 23 45 67 89</a>
-                                <a href="#">Paris, France</a>
+                                <a href="tel:+22897107833">+228 97 17 11 11</a>
+                                <a href="#">Lomé, TOGO</a>
                             </div>
                         </div>
                     </div>
