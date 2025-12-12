@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 
 const Users = () => {
   const [users] = useState([
-    { id: 1, nom: 'Marie Martin', email: 'marie.martin@email.com', role: 'patient', statut: 'actif', inscription: '2024-01-15' },
-    { id: 2, nom: 'Jean Dupont', email: 'jean.dupont@mediconnect.com', role: 'medecin', statut: 'actif', inscription: '2023-11-20' },
-    { id: 3, nom: 'Sophie Durand', email: 'sophie.durand@pharmacie.com', role: 'pharmacien', statut: 'actif', inscription: '2024-02-10' },
+    { id: 1, nom: 'BIMA Afi', email: 'bima.afi@gmail.com', role: 'patient', statut: 'actif', inscription: '2024-01-15' },
+    { id: 2, nom: 'BEGNI Touna', email: 'begni.touna@lamesse.com', role: 'medecin', statut: 'actif', inscription: '2023-11-20' },
+    { id: 3, nom: 'AKOSSIWA Mantoba', email: 'akossiwa.montoba@lamesse.com', role: 'pharmacien', statut: 'actif', inscription: '2024-02-10' },
   ]);
 
   const getRoleBadge = (role) => {

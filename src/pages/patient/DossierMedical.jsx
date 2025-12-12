@@ -102,7 +102,7 @@ const DossierMedical = () => {
                                     </div>
                                     <div className="info-item">
                                         <span className="label">Médecin traitant</span>
-                                        <span className="value">Dr. Jean Dupont</span>
+                                        <span className="value">Dr. BEGNI Touna</span>
                                     </div>
                                     <div className="info-item">
                                         <span className="label">Dernière consultation</span>
@@ -194,7 +194,7 @@ const DossierMedical = () => {
                                     <div className="flex items-center gap-4">
                                         <div className="avatar">JD</div>
                                         <div>
-                                            <h4>Dr. Jean Dupont</h4>
+                                            <h4>Dr. BEGNI Touna</h4>
                                             <p className="text-sm text-gray-600">Cardiologue - Médecin traitant</p>
                                         </div>
                                     </div>
@@ -207,7 +207,7 @@ const DossierMedical = () => {
                                     <div className="flex items-center gap-4">
                                         <div className="avatar">ML</div>
                                         <div>
-                                            <h4>Dr. Marie Laurent</h4>
+                                            <h4>Dr. Prisca KANGNI</h4>
                                             <p className="text-sm text-gray-600">Généraliste</p>
                                         </div>
                                     </div>

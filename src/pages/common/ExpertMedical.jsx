@@ -7,7 +7,7 @@ export const ExpertMedical = () => {
     const [messages, setMessages] = React.useState([
         {
             type: 'bot',
-            content: `Bonjour ! Je suis l'assistant médical MediConnect en mode ${chatMode}. Comment puis-je vous aider ?`
+            content: `Bonjour ! Je suis l'assistant médical LAMESSE DAMA en mode ${chatMode}. Comment puis-je vous aider ?`
         }
     ]);
     const [inputMessage, setInputMessage] = React.useState('');
@@ -52,20 +52,7 @@ export const ExpertMedical = () => {
                         <h3>Chatbot médical intelligent</h3>
                     </div>
                     <div className="card-content">
-                        <div className="chat-mode-selector">
-                            <div
-                                className={`user-type-btn ${chatMode === 'patient' ? 'active' : ''}`}
-                                onClick={() => setChatMode('patient')}
-                            >
-                                <i className="fas fa-user-injured"></i> Mode Patient
-                            </div>
-                            <div
-                                className={`user-type-btn ${chatMode === 'medecin' ? 'active' : ''}`}
-                                onClick={() => setChatMode('medecin')}
-                            >
-                                <i className="fas fa-user-md"></i> Mode Médecin
-                            </div>
-                        </div>
+
 
                         <div className="chat-container">
                             <div className="chat-messages">

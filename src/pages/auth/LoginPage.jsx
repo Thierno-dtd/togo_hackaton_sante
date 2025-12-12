@@ -47,7 +47,7 @@ const LoginPage = () => {
                             <i className="fas fa-arrow-left"></i> Retour à l'accueil
                         </a>
                     </div>
-                    <h2>Bienvenue sur MediConnect</h2>
+                    <h2>Bienvenue sur LAMESSE DAMA</h2>
                     <p>
                         Connectez-vous pour accéder à votre espace sécurisé et bénéficier de toutes les
                         fonctionnalités de la plateforme.

@@ -40,7 +40,7 @@ const Dashboard = () => {
             <div className="content-header-app">
                 <div className="header-image">
                     <div className="header-overlay">
-                        <h1>Tableau de bord MediConnect</h1>
+                        <h1>Tableau de bord LAMESSE DAMA</h1>
                         <p>
                             Bienvenue {user.prenom} {user.nom} - {getRoleLabel(user.role)}
                         </p>
@@ -128,7 +128,7 @@ const getStatsForRole = (role) => {
         pharmacien: [
             { label: 'Ordonnances traitées', value: '89', icon: 'fas fa-prescription-bottle', color: 'blue' },
             { label: 'Stock faible', value: '12', icon: 'fas fa-exclamation-circle', color: 'orange' },
-            { label: 'Ventes du jour', value: '2,450€', icon: 'fas fa-chart-line', color: 'green' },
+            { label: 'Ventes du jour', value: '245 780.5 Fcfa', icon: 'fas fa-chart-line', color: 'green' },
             { label: 'Clients servis', value: '67', icon: 'fas fa-users', color: 'purple' }
         ],
         admin: [

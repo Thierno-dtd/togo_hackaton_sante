@@ -15,7 +15,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                             <div className="logo-icon">
                                 <i className="fas fa-heartbeat"></i>
                             </div>
-                            Medi<span>Connect</span>
+                            LAMASSE <span>DAMA</span>
                         </div>
                         <div className="nav-links">
                             <a href="#features">Fonctionnalités</a>
@@ -81,7 +81,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                     <div className="section-title fade-in">
                         <h2>Fonctionnalités principales</h2>
                         <p>
-                            Découvrez comment MediConnect transforme l'expérience des soins de santé pour tous les acteurs du système
+                            Découvrez comment LAMESSE DAMA transforme l'expérience des soins de santé pour tous les acteurs du système
                         </p>
                     </div>
                     <div className="features-grid">
@@ -123,7 +123,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                 <div className="container">
                     <div className="section-title fade-in">
                         <h2>Défis du système de santé</h2>
-                        <p>MediConnect répond aux problématiques critiques identifiées dans le système actuel</p>
+                        <p>LAMESSE DAMA répond aux problématiques critiques identifiées dans le système actuel</p>
                     </div>
                     <div className="problem-list">
                         <div className="problem-item fade-in-delay-1">
@@ -183,7 +183,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                 <div className="container">
                     <h2 className="fade-in">Prêt à transformer l'expérience des soins de santé ?</h2>
                     <p className="fade-in-delay-1">
-                        Rejoignez la révolution MediConnect et bénéficiez d'une plateforme sécurisée, intuitive et collaborative.
+                        Rejoignez la révolution LAMESSE DAMA et bénéficiez d'une plateforme sécurisée, intuitive et collaborative.
                     </p>
                     <div className="cta-buttons fade-in-delay-2">
                         <button
@@ -201,7 +201,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                 <div className="container">
                     <div className="footer-content">
                         <div>
-                            <div className="footer-logo">Medi<span>Connect</span></div>
+                            <div className="footer-logo">LAMESSE <span>DAMA</span></div>
                             <p>Révolutionner les soins de santé par la technologie et la collaboration.</p>
                         </div>
                         <div>
@@ -223,7 +223,7 @@ const LandingPage = ({ onNavigateToLogin }) => {
                         </div>
                     </div>
                     <div className="copyright">
-                        <p>&copy; 2025 MediConnect. Tous droits réservés. Application pour la compétition nationale de santé.</p>
+                        <p>&copy; 2025 LAMESSE DAMA. Tous droits réservés. Application pour la compétition nationale de santé.</p>
                     </div>
                 </div>
             </footer>

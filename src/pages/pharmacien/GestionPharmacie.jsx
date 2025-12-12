@@ -5,8 +5,8 @@ const GestionPharmacie = () => {
 
     const pharmacieInfo = {
         nom: 'Pharmacie Centrale',
-        adresse: '12 Rue de la Santé, 75014 Paris',
-        telephone: '+33 1 45 65 43 21',
+        adresse: 'B.P 2326 Tokoin, Lomé',
+        telephone: '+228 91 45 48 82',
         horaires: 'Lun-Sam: 8h-20h, Dim: 9h-13h',
         garde: true
     };

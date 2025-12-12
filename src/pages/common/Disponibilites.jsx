@@ -6,7 +6,7 @@ const Disponibilites = () => {
             id: 1,
             nom: 'Hôpital Saint-Louis',
             type: 'Hôpital',
-            adresse: '1 Avenue Claude Vellefaux, 75010 Paris',
+            adresse: 'Agoe-Assiyéyé, Lomé',
             distance: '2.3 km',
             disponibilite: 'Disponible',
             services: ['Urgences', 'Cardiologie', 'Neurologie']
@@ -15,7 +15,7 @@ const Disponibilites = () => {
             id: 2,
             nom: 'Pharmacie Centrale',
             type: 'Pharmacie',
-            adresse: '12 Rue de la Santé, 75014 Paris',
+            adresse: 'Camps Fir, Lomé',
             distance: '0.8 km',
             disponibilite: 'Ouvert',
             services: ['Garde 24h', 'Orthopédie']
@@ -24,7 +24,7 @@ const Disponibilites = () => {
             id: 3,
             nom: 'Clinique du Parc',
             type: 'Clinique',
-            adresse: '45 Boulevard de la République, 92100 Boulogne',
+            adresse: 'Zossimé, Lomé',
             distance: '5.1 km',
             disponibilite: 'Complet',
             services: ['Consultations', 'Imagerie']
@@ -34,10 +34,7 @@ const Disponibilites = () => {
     return (
         <div className="page-content">
             <div className="content-header-app">
-                <div className="header-image" style={{
-                    background: 'linear-gradient(rgba(249, 115, 22, 0.8), rgba(249, 115, 22, 0.9)), url(https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80)',
-                    backgroundSize: 'cover'
-                }}>
+                <div className="header-image"   >
                     <div className="header-overlay">
                         <h1>Disponibilités des Centres</h1>
                         <p>Trouvez les établissements de santé disponibles près de vous</p>

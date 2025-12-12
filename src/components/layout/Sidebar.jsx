@@ -25,7 +25,7 @@ const Sidebar = () => {
             <div className="sidebar-header">
                 <div className="app-logo">
                     <i className="fas fa-heartbeat"></i>
-                    Medi<span>Connect</span>
+                    LAMESSE<span>DAMA</span>
                 </div>
             </div>
 

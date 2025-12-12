@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { MOCK_USERS } from '../data/mockData';
+import toast from "react-hot-toast";
 
 const AuthContext = createContext(null);
 
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }) => {
         );
 
         if (!mockUser) {
+            toast.error('Identifiants incorrects')
             return { success: false, error: 'Invalid credentials' };
         }
 
@@ -57,7 +59,7 @@ export const AuthProvider = ({ children }) => {
         setUser(userWithTimestamp);
         setIsAuthenticated(true);
         localStorage.setItem('mediconnect_user', JSON.stringify(userWithTimestamp));
-
+        toast.success(`Bienvenue ${user.displayName} !`);
         return { success: true, user: userWithTimestamp };
     };
 
@@ -66,6 +68,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setIsAuthenticated(false);
         localStorage.removeItem('mediconnect_user');
+        toast.success('Déconnexion réussie');
     };
 
     const updateUser = (updates) => {

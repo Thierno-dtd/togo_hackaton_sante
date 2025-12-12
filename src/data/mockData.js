@@ -2,20 +2,20 @@
 export const MOCK_USERS = {
   medecin: {
     id: 'med_001',
-    nom: 'Dupont',
-    prenom: 'Jean',
-    email: 'jean.dupont@mediconnect.com',
+    nom: 'BEGNI',
+    prenom: 'Touna',
+    email: 'begni.touna@lamesse.com',
     role: 'medecin',
     avatar: 'JD',
     specialite: 'Cardiologie',
-    telephone: '+33 1 23 45 67 89',
+    telephone: '+228 91 45 38 82',
     numeroOrdre: 'ORD-12345'
   },
   patient: {
     id: 'pat_001',
-    nom: 'Martin',
-    prenom: 'Marie',
-    email: 'marie.martin@email.com',
+    nom: 'BIMA',
+    prenom: 'Afi',
+    email: 'bima.afi@gmail.com',
     role: 'patient',
     avatar: 'MM',
     age: 35,
@@ -25,20 +25,20 @@ export const MOCK_USERS = {
   },
   pharmacien: {
     id: 'pharm_001',
-    nom: 'Durand',
-    prenom: 'Sophie',
-    email: 'sophie.durand@pharmacie-centrale.com',
+    nom: 'AKOSSIWA',
+    prenom: 'Mantoba',
+    email: 'akossiwa.montoba@lamesse.com',
     role: 'pharmacien',
     avatar: 'SD',
     pharmacie: 'Pharmacie Centrale',
-    adresse: '12 Rue de la Santé, 75014 Paris',
+    adresse: 'B.P 2123 Tokoin, Lomé',
     numeroOrdre: 'PHARM-67890'
   },
   admin: {
     id: 'admin_001',
     nom: 'Admin',
     prenom: 'Système',
-    email: 'admin@mediconnect.com',
+    email: 'admin@lamesse.com',
     role: 'admin',
     avatar: 'AS',
     permissions: 'all'

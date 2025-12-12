@@ -39,7 +39,7 @@ const MainLayout = () => {
         };
 
         const path = pathParts.join('/');
-        return titles[path] || 'MediConnect';
+        return titles[path] || 'LAMESSE DAMA';
     };
 
     return (
