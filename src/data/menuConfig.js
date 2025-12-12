@@ -187,12 +187,6 @@ export const MENU_CONFIG = {
                     icon: 'fas fa-prescription',
                     badge: 'Ph',
                     route: '/pharmacien/scan-qr'
-                },
-                {
-                    id: 'qr-verification',
-                    label: 'Vérification QR',
-                    icon: 'fas fa-qrcode',
-                    route: '/verification-qr'
                 }
             ]
         },
