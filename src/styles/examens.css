@@ -1,0 +1,1063 @@
+
+/* Variables spécifiques */
+:root {
+    --exam-primary: #2980b9;
+    --exam-primary-light: #3498db;
+    --exam-success: #27ae60;
+    --exam-warning: #f39c12;
+    --exam-danger: #e74c3c;
+    --exam-card-bg: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* En-tête avec statistiques */
+.examens-header {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.header-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card-exam {
+    background: var(--exam-card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-exam:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(41, 128, 185, 0.15);
+    border-color: var(--exam-primary);
+}
+
+.stat-card-exam::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--exam-primary);
+}
+
+.stat-card-exam:nth-child(2)::before { background: var(--exam-success); }
+.stat-card-exam:nth-child(3)::before { background: var(--exam-warning); }
+.stat-card-exam:nth-child(4)::before { background: #9b59b6; }
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--exam-primary), var(--exam-primary-light));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.stat-card-exam:nth-child(2) .stat-icon { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+.stat-card-exam:nth-child(3) .stat-icon { background: linear-gradient(135deg, #f39c12, #f1c40f); }
+.stat-card-exam:nth-child(4) .stat-icon { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-examens {
+    position: relative;
+    min-width: 300px;
+}
+
+.search-examens i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+.search-examens input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.search-examens input:focus {
+    outline: none;
+    border-color: var(--exam-primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
+}
+
+/* Filtres */
+.examens-filters {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.filter-chip {
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.filter-chip:hover {
+    border-color: var(--exam-primary);
+    color: var(--exam-primary);
+}
+
+.filter-chip.active {
+    background: var(--exam-primary);
+    border-color: var(--exam-primary);
+    color: white;
+}
+
+.filter-chip.type-chip.active {
+    background: var(--exam-primary);
+}
+
+.date-filters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.date-input {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.date-filters span {
+    color: #666;
+}
+
+/* Grille des examens */
+.examens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.examen-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+.examen-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(41, 128, 185, 0.15);
+    border-color: var(--exam-primary-light);
+}
+
+.examen-card.urgent {
+    border-left: 4px solid var(--exam-danger);
+    animation: pulse 2s infinite;
+}
+
+.examen-header {
+    padding: 1.25rem 1.5rem 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.examen-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.urgent-badge {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.scheduled-badge {
+    background: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.completed-badge {
+    background: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+}
+
+.examen-id {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+.examen-body {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.examen-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+}
+
+.examen-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.examen-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.tag-imaging, .tag-lab, .tag-cardio, .tag-neuro {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.tag-imaging {
+    background: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.tag-lab {
+    background: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+}
+
+.tag-cardio {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.tag-neuro {
+    background: rgba(155, 89, 182, 0.1);
+    color: #8e44ad;
+    border: 1px solid rgba(155, 89, 182, 0.2);
+}
+
+.priority-high, .priority-normal, .priority-low {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.priority-high {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+}
+
+.priority-normal {
+    background: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+}
+
+.priority-low {
+    background: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+}
+
+.examen-indications,
+.examen-requirements,
+.examen-schedule,
+.examen-results {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.examen-indications h4,
+.examen-requirements h4,
+.examen-schedule h4,
+.examen-results h4 {
+    color: var(--exam-primary);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.examen-indications p {
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+.examen-requirements ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.examen-requirements li {
+    margin-bottom: 0.25rem;
+    color: #555;
+}
+
+.schedule-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.results-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.result-item {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-summary {
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    border-left: 3px solid var(--exam-success);
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.summary-value {
+    color: #555;
+    margin-left: 0.5rem;
+}
+
+.examen-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.examen-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.examen-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.status-pending {
+    background: #f39c12;
+    animation: pulse 2s infinite;
+}
+
+.status-scheduled {
+    background: #3498db;
+}
+
+.status-completed {
+    background: #27ae60;
+}
+
+.status-canceled {
+    background: #e74c3c;
+}
+
+/* Vue Calendrier */
+.calendar-container {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.calendar-nav h3 {
+    margin: 0;
+    min-width: 150px;
+    text-align: center;
+}
+
+.calendar-views {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-btn {
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+}
+
+.view-btn.active {
+    background: var(--exam-primary);
+    color: white;
+    border-color: var(--exam-primary);
+}
+
+/* Formulaire multi-étapes */
+.demande-form {
+    position: relative;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.step-number {
+    width: 36px;
+    height: 36px;
+    background: var(--exam-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.step-title h4 {
+    margin: 0 0 0.25rem 0;
+    color: #2c3e50;
+}
+
+.step-title p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.step-content {
+    padding: 1rem 0;
+}
+
+.patient-search {
+    margin-bottom: 1.5rem;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+
+.search-container i {
+    position: absolute;
+    left: 15px;
+    color: #888;
+}
+
+.search-container input {
+    flex: 1;
+    padding: 12px 15px 12px 45px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.patient-selection {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+.patient-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.patient-card:hover {
+    background: #f8f9fa;
+}
+
+.patient-card.selected {
+    background: rgba(41, 128, 185, 0.1);
+    border-left: 3px solid var(--exam-primary);
+}
+
+.patient-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--exam-primary), var(--exam-primary-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+}
+
+.patient-info {
+    flex: 1;
+}
+
+.patient-info h5 {
+    margin: 0 0 0.25rem 0;
+    color: #2c3e50;
+}
+
+.patient-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.exam-categories {
+    margin-bottom: 2rem;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.category-card {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-card:hover {
+    border-color: var(--exam-primary);
+    transform: translateY(-2px);
+}
+
+.category-card.selected {
+    border-color: var(--exam-primary);
+    background: rgba(41, 128, 185, 0.1);
+}
+
+.category-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--exam-primary), var(--exam-primary-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 auto 1rem auto;
+}
+
+.category-card:nth-child(2) .category-icon { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+.category-card:nth-child(3) .category-icon { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.category-card:nth-child(4) .category-icon { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+.category-card h5 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.category-card p {
+    margin: 0;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.exam-type-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.exam-type {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.exam-type:hover {
+    border-color: var(--exam-primary);
+}
+
+.exam-type.selected {
+    border-color: var(--exam-primary);
+    background: rgba(41, 128, 185, 0.1);
+}
+
+.type-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.exam-type.selected .type-checkbox {
+    background: var(--exam-primary);
+    border-color: var(--exam-primary);
+}
+
+.type-info {
+    flex: 1;
+}
+
+.type-info h6 {
+    margin: 0 0 0.25rem 0;
+    color: #2c3e50;
+}
+
+.type-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.type-duration {
+    font-size: 0.8rem;
+    color: #888;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.priority-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.priority-option input {
+    display: none;
+}
+
+.priority-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.priority-option input:checked + .priority-card {
+    border-color: var(--exam-primary);
+    background: rgba(41, 128, 185, 0.1);
+}
+
+.priority-card i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.priority-card i.fa-clock { color: #3498db; }
+.priority-card i.fa-exclamation-triangle { color: #f39c12; }
+.priority-card i.fa-exclamation-circle { color: #e74c3c; }
+
+.priority-card span {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.priority-card p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.preparation-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.previous-exams {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.exam-reference {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid var(--exam-primary);
+}
+
+.location-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.location-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+.location-card i {
+    font-size: 1.5rem;
+    color: var(--exam-primary);
+}
+
+.location-card strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #2c3e50;
+}
+
+.location-card p {
+    margin: 0 0 0.25rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.location-info {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.date-selection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.date-suggestions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.time-slots {
+    margin-top: 1rem;
+}
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+
+.time-slot {
+    padding: 10px;
+    text-align: center;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-slot:hover {
+    border-color: var(--exam-primary);
+}
+
+.time-slot.selected {
+    background: var(--exam-primary);
+    color: white;
+    border-color: var(--exam-primary);
+}
+
+/* Navigation des étapes */
+.step-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.step-progress {
+    flex: 1;
+    margin: 0 2rem;
+}
+
+.progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--exam-primary), var(--exam-primary-light));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.step-counter {
+    display: block;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .examens-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .header-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-examens {
+        min-width: 100%;
+    }
+
+    .examens-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .priority-selector {
+        grid-template-columns: 1fr;
+    }
+
+    .slot-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .step-navigation {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .step-progress {
+        margin: 0;
+        width: 100%;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
