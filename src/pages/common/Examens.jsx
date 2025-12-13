@@ -1,1024 +1,733 @@
-// src/pages/common/Examens.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 const Examens = () => {
     const { user } = useAuth();
-    const [examens, setExamens] = useState([]);
-    const [filteredExamens, setFilteredExamens] = useState([]);
+    const [rendezvous, setRendezvous] = useState([]);
+    const [filteredRdv, setFilteredRdv] = useState([]);
     const [activeFilter, setActiveFilter] = useState('all');
-    const [activeTypeFilter, setActiveTypeFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [currentStep, setCurrentStep] = useState(1);
-    const [selectedPatient, setSelectedPatient] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState('imaging');
-    const [selectedExamType, setSelectedExamType] = useState(null);
+    const [selectedRdv, setSelectedRdv] = useState(null);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+    // Form state
     const [formData, setFormData] = useState({
-        priority: 'high',
-        indications: '',
-        questionClinique: '',
-        regionAnatomique: '',
-        preparations: [],
-        service: 'neurology',
-        prescripteur: user?.nom ? `Dr. ${user.nom} ${user.prenom}` : '',
-        location: 'hospital',
-        datePreferee: '',
-        creneauHoraire: '10:30',
-        instructions: ''
+        patient: '',
+        motif: '',
+        dateRdv: '',
+        heureRdv: '09:00',
+        duree: '30',
+        type: 'consultation',
+        lieu: 'cabinet',
+        notes: '',
+        rappel: true
     });
 
-    // Données d'exemple pour les patients
+    // Mock data - à remplacer par API
+    const mockRdv = [
+        {
+            id: 'RDV-001',
+            patient: {
+                id: 'pat_001',
+                nom: 'BIMA Afi',
+                avatar: 'BA',
+                telephone: '+228 90 12 34 56'
+            },
+            medecin: {
+                id: 'med_001',
+                nom: 'Dr. BEGNI Touna',
+                specialite: 'Cardiologie'
+            },
+            date: '2024-12-16',
+            heure: '09:00',
+            duree: 30,
+            type: 'consultation',
+            motif: 'Suivi cardiologique de routine',
+            statut: 'confirme',
+            lieu: 'Cabinet médical',
+            notes: 'Apporter les derniers résultats d\'analyses',
+            rappelEnvoye: true,
+            creeLe: '2024-12-10'
+        },
+        {
+            id: 'RDV-002',
+            patient: {
+                id: 'pat_002',
+                nom: 'Rebecca AZIALE',
+                avatar: 'RA',
+                telephone: '+228 91 23 45 67'
+            },
+            medecin: {
+                id: 'med_001',
+                nom: 'Dr. BEGNI Touna',
+                specialite: 'Cardiologie'
+            },
+            date: '2024-12-14',
+            heure: '14:30',
+            duree: 45,
+            type: 'controle',
+            motif: 'Contrôle post-opératoire',
+            statut: 'en_attente',
+            lieu: 'Cabinet médical',
+            notes: '',
+            rappelEnvoye: false,
+            creeLe: '2024-12-12'
+        },
+        {
+            id: 'RDV-003',
+            patient: {
+                id: 'pat_003',
+                nom: 'Martin KOFFI',
+                avatar: 'MK',
+                telephone: '+228 92 34 56 78'
+            },
+            medecin: {
+                id: 'med_001',
+                nom: 'Dr. BEGNI Touna',
+                specialite: 'Cardiologie'
+            },
+            date: '2024-12-18',
+            heure: '10:30',
+            duree: 60,
+            type: 'urgence',
+            motif: 'Douleurs thoraciques persistantes',
+            statut: 'urgent',
+            lieu: 'Clinique',
+            notes: 'Patient à examiner en priorité',
+            rappelEnvoye: true,
+            creeLe: '2024-12-13'
+        }
+    ];
+
     const mockPatients = [
-        {
-            id: 'PAT-1234',
-            nom: 'BIMA Afi',
-            age: 42,
-            sexe: 'Femme',
-            groupeSanguin: 'A+',
-            avatar: 'MM'
-        },
-        {
-            id: 'PAT-5678',
-            nom: 'Rebecca AZIALE',
-            age: 35,
-            sexe: 'Femme',
-            groupeSanguin: 'O+',
-            avatar: 'PD'
-        }
+        { id: 'pat_001', nom: 'BIMA Afi', avatar: 'BA', telephone: '+228 90 12 34 56' },
+        { id: 'pat_002', nom: 'Rebecca AZIALE', avatar: 'RA', telephone: '+228 91 23 45 67' },
+        { id: 'pat_003', nom: 'Martin KOFFI', avatar: 'MK', telephone: '+228 92 34 56 78' }
     ];
 
-    // Données d'exemple pour les examens
-    const mockExamens = [
-        {
-            id: 'EXM-2024-058',
-            titre: 'Scanner cérébral avec injection',
-            patient: { nom: 'Marie Martin', id: 'PAT-1234' },
-            date: '15/06/2024',
-            type: 'imaging',
-            priorite: 'haute',
-            status: 'pending',
-            service: 'Neurologie',
-            prescripteur: 'Dr. BEGNI Touna',
-            indications: 'Suspicion d\'AVC ischémique. Céphalées brutales avec déficit moteur droit.',
-            preparations: ['À jeun depuis 6h', 'Bilan rénal récent requis', 'Allergie à vérifier (iode)'],
-            urgent: true
-        },
-        {
-            id: 'EXM-2024-059',
-            titre: 'Bilan biologique complet + marqueurs',
-            patient: { nom: 'Pierre Dubois', id: 'PAT-5678' },
-            date: '14/06/2024',
-            type: 'lab',
-            priorite: 'normale',
-            status: 'scheduled',
-            service: 'Médecine interne',
-            prescripteur: 'Dr. GAVON Hector',
-            indications: 'Suivi diabète type 2. Évaluation fonction rénale et hépatique.',
-            preparations: ['À jeun strict depuis 12h', 'Arrêt metformine 48h avant', 'Prélèvement matinal'],
-            scheduledDate: '18/06/2024 - 08:30',
-            location: 'Labo Central'
-        },
-        {
-            id: 'EXM-2024-057',
-            titre: 'Échographie cardiaque Doppler',
-            patient: { nom: 'Sophie Laurent', id: 'PAT-9012' },
-            date: '12/06/2024',
-            type: 'cardio',
-            priorite: 'normale',
-            status: 'completed',
-            service: 'Cardiologie',
-            prescripteur: 'Dr. KPATCHA Martin',
-            indications: 'Souffle systolique découvert à l\'auscultation. Bilan pré-opératoire.',
-            resultat: 'Insuffisance mitrale légère. Fonction VG conservée.',
-            completedDate: '13/06'
-        }
-    ];
-
-    // Catégories d'examens
-    const categories = [
-        {
-            id: 'imaging',
-            nom: 'Imagerie médicale',
-            icon: 'fas fa-x-ray',
-            description: 'Scanner, IRM, Radiographie, Échographie'
-        },
-        {
-            id: 'lab',
-            nom: 'Biologie médicale',
-            icon: 'fas fa-vial',
-            description: 'Analyses sanguines, urinaires, marqueurs'
-        },
-        {
-            id: 'cardio',
-            nom: 'Cardiologie',
-            icon: 'fas fa-heartbeat',
-            description: 'ECG, Échographie cardiaque, Holter'
-        },
-        {
-            id: 'neuro',
-            nom: 'Neurologie',
-            icon: 'fas fa-brain',
-            description: 'EEG, EMG, Potentiels évoqués'
-        }
-    ];
-
-    // Types d'examens par catégorie
-    const examTypesByCategory = {
-        imaging: [
-            { id: 'scanner', nom: 'Scanner cérébral', description: 'Examen TDM avec/sans injection', duree: '20 min' },
-            { id: 'irm', nom: 'IRM cérébrale', description: 'Imagerie par résonance magnétique', duree: '45 min' },
-            { id: 'echo', nom: 'Échographie abdominale', description: 'Examen échographique complet', duree: '30 min' }
-        ],
-        lab: [
-            { id: 'hemato', nom: 'Hématologie complète', description: 'NFS, plaquettes, formule', duree: '15 min' },
-            { id: 'bio', nom: 'Biochimie', description: 'Glycémie, lipides, fonction rénale', duree: '15 min' }
-        ],
-        cardio: [
-            { id: 'ecg', nom: 'Électrocardiogramme', description: 'ECG standard 12 dérivations', duree: '10 min' },
-            { id: 'echo-cardio', nom: 'Échographie cardiaque', description: 'Echo-Doppler cardiaque', duree: '30 min' }
-        ],
-        neuro: [
-            { id: 'eeg', nom: 'Électroencéphalogramme', description: 'EEG standard', duree: '45 min' },
-            { id: 'emg', nom: 'Électromyogramme', description: 'EMG des membres', duree: '60 min' }
-        ]
-    };
-
-    const creneauxHoraires = [
+    const creneauxDisponibles = [
         '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
         '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
     ];
 
     useEffect(() => {
-        setExamens(mockExamens);
-        setFilteredExamens(mockExamens);
+        setRendezvous(mockRdv);
+        setFilteredRdv(mockRdv);
     }, []);
 
-    // Filtrer les examens
+    // Filtrage
     useEffect(() => {
-        let filtered = examens;
+        let filtered = rendezvous;
 
         if (activeFilter !== 'all') {
-            filtered = filtered.filter(e => e.status === activeFilter);
-        }
-
-        if (activeTypeFilter !== 'all') {
-            filtered = filtered.filter(e => e.type === activeTypeFilter);
+            filtered = filtered.filter(rdv => rdv.statut === activeFilter);
         }
 
         if (searchTerm) {
-            filtered = filtered.filter(e =>
-                e.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                e.patient.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                e.id.toLowerCase().includes(searchTerm.toLowerCase())
+            filtered = filtered.filter(rdv =>
+                rdv.patient.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                rdv.motif.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                rdv.id.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
-        setFilteredExamens(filtered);
-    }, [activeFilter, activeTypeFilter, searchTerm, examens]);
+        setFilteredRdv(filtered);
+    }, [activeFilter, searchTerm, rendezvous]);
 
     const stats = {
-        pending: examens.filter(e => e.status === 'pending').length,
-        completed: examens.filter(e => e.status === 'completed').length,
-        urgent: examens.filter(e => e.urgent).length,
-        rate: 94
+        total: rendezvous.length,
+        confirme: rendezvous.filter(r => r.statut === 'confirme').length,
+        en_attente: rendezvous.filter(r => r.statut === 'en_attente').length,
+        urgent: rendezvous.filter(r => r.statut === 'urgent').length
     };
 
-    const getStatusBadge = (status) => {
+    const getStatutBadge = (statut) => {
         const badges = {
-            pending: { class: 'urgent-badge', icon: 'fa-clock', text: 'EN ATTENTE' },
-            scheduled: { class: 'scheduled-badge', icon: 'fa-calendar-check', text: 'PLANIFIÉ' },
-            completed: { class: 'completed-badge', icon: 'fa-check-circle', text: 'TERMINÉ' }
+            confirme: { class: 'badge-success', icon: 'fa-check-circle', text: 'Confirmé' },
+            en_attente: { class: 'badge-warning', icon: 'fa-clock', text: 'En attente' },
+            urgent: { class: 'badge-danger', icon: 'fa-exclamation-circle', text: 'Urgent' },
+            annule: { class: 'badge-danger', icon: 'fa-times-circle', text: 'Annulé' },
+            termine: { class: 'badge-info', icon: 'fa-check', text: 'Terminé' }
         };
-        return badges[status] || badges.pending;
+        return badges[statut] || badges.en_attente;
     };
 
-    const getTypeTag = (type) => {
-        const tags = {
-            imaging: { class: 'tag-imaging', text: 'Imagerie' },
-            lab: { class: 'tag-lab', text: 'Laboratoire' },
-            cardio: { class: 'tag-cardio', text: 'Cardiologie' },
-            neuro: { class: 'tag-neuro', text: 'Neurologie' }
+    const getTypeBadge = (type) => {
+        const badges = {
+            consultation: { class: 'badge-info', text: 'Consultation' },
+            controle: { class: 'badge-medical', text: 'Contrôle' },
+            urgence: { class: 'badge-danger', text: 'Urgence' },
+            suivi: { class: 'badge-warning', text: 'Suivi' }
         };
-        return tags[type] || tags.imaging;
+        return badges[type] || badges.consultation;
     };
 
-    const getPriorityClass = (priorite) => {
-        return `priority-${priorite}`;
-    };
-
-    // Gestion du formulaire multi-étapes
-    const nextStep = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(prev + 1, 4));
+    const handleOpenModal = (rdv = null) => {
+        if (rdv) {
+            setFormData({
+                patient: rdv.patient.id,
+                motif: rdv.motif,
+                dateRdv: rdv.date,
+                heureRdv: rdv.heure,
+                duree: rdv.duree.toString(),
+                type: rdv.type,
+                lieu: rdv.lieu,
+                notes: rdv.notes,
+                rappel: rdv.rappelEnvoye
+            });
+            setSelectedRdv(rdv);
+        } else {
+            setFormData({
+                patient: '',
+                motif: '',
+                dateRdv: '',
+                heureRdv: '09:00',
+                duree: '30',
+                type: 'consultation',
+                lieu: 'cabinet',
+                notes: '',
+                rappel: true
+            });
+            setSelectedRdv(null);
         }
+        setShowModal(true);
     };
 
-    const prevStep = () => {
-        setCurrentStep(prev => Math.max(prev - 1, 1));
-    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-    const validateStep = (step) => {
-        switch (step) {
-            case 1:
-                if (!selectedPatient) {
-                    alert('Veuillez sélectionner un patient');
-                    return false;
-                }
-                break;
-            case 2:
-                if (!selectedExamType) {
-                    alert('Veuillez sélectionner un type d\'examen');
-                    return false;
-                }
-                break;
-            case 3:
-                if (!formData.indications.trim()) {
-                    alert('Veuillez remplir les indications médicales');
-                    return false;
-                }
-                break;
-        }
-        return true;
-    };
+        const patientData = mockPatients.find(p => p.id === formData.patient);
 
-    const handleSubmit = () => {
-        if (!selectedPatient || !selectedExamType) {
-            alert('Veuillez compléter tous les champs obligatoires');
-            return;
-        }
-
-        const newExamen = {
-            id: `EXM-2024-${Math.floor(Math.random() * 1000)}`,
-            titre: selectedExamType.nom,
-            patient: selectedPatient,
-            date: new Date().toLocaleDateString('fr-FR'),
-            type: selectedCategory,
-            priorite: formData.priority,
-            status: 'pending',
-            service: formData.service,
-            prescripteur: formData.prescripteur,
-            indications: formData.indications,
-            preparations: formData.preparations,
-            urgent: formData.priority === 'urgent'
+        const newRdv = {
+            id: `RDV-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+            patient: patientData,
+            medecin: {
+                id: user.id,
+                nom: `Dr. ${user.nom} ${user.prenom}`,
+                specialite: user.specialite
+            },
+            date: formData.dateRdv,
+            heure: formData.heureRdv,
+            duree: parseInt(formData.duree),
+            type: formData.type,
+            motif: formData.motif,
+            statut: 'en_attente',
+            lieu: formData.lieu,
+            notes: formData.notes,
+            rappelEnvoye: false,
+            creeLe: new Date().toISOString().split('T')[0]
         };
 
-        setExamens([newExamen, ...examens]);
+        if (selectedRdv) {
+            setRendezvous(rendezvous.map(r => r.id === selectedRdv.id ? { ...r, ...newRdv } : r));
+        } else {
+            setRendezvous([newRdv, ...rendezvous]);
+        }
+
         setShowModal(false);
-        resetForm();
-        alert('Demande d\'examen créée avec succès !');
+        alert('Rendez-vous ' + (selectedRdv ? 'modifié' : 'créé') + ' avec succès !');
     };
 
-    const resetForm = () => {
-        setCurrentStep(1);
-        setSelectedPatient(null);
-        setSelectedCategory('imaging');
-        setSelectedExamType(null);
-        setFormData({
-            priority: 'high',
-            indications: '',
-            questionClinique: '',
-            regionAnatomique: '',
-            preparations: [],
-            service: 'neurology',
-            prescripteur: user?.nom ? `Dr. ${user.nom} ${user.prenom}` : '',
-            location: 'hospital',
-            datePreferee: '',
-            creneauHoraire: '10:30',
-            instructions: ''
-        });
+    const handleConfirmer = (id) => {
+        setRendezvous(rendezvous.map(r =>
+            r.id === id ? { ...r, statut: 'confirme' } : r
+        ));
     };
 
-    const handlePreparationChange = (prep) => {
-        setFormData(prev => ({
-            ...prev,
-            preparations: prev.preparations.includes(prep)
-                ? prev.preparations.filter(p => p !== prep)
-                : [...prev.preparations, prep]
-        }));
+    const handleAnnuler = (id) => {
+        if (window.confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')) {
+            setRendezvous(rendezvous.map(r =>
+                r.id === id ? { ...r, statut: 'annule' } : r
+            ));
+        }
     };
 
-    const addDaysToDate = (days) => {
-        const date = new Date();
-        date.setDate(date.getDate() + days);
-        return date.toISOString().split('T')[0];
+    const handleViewDetails = (rdv) => {
+        setSelectedRdv(rdv);
+        setShowDetailsModal(true);
     };
 
     return (
-        <div id="examens-content" className="page-content">
+        <div className="page-content">
             {/* Header */}
             <div className="content-header-app">
                 <div className="header-image" style={{
-                    background: 'linear-gradient(rgba(41, 128, 185, 0.8), rgba(41, 128, 185, 0.9)), url(https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80)',
+                    background: 'linear-gradient(rgba(41, 128, 185, 0.8), rgba(41, 128, 185, 0.9)), url(https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80)',
                     backgroundSize: 'cover'
                 }}>
                     <div className="header-overlay">
-                        <h1>Demandes d'Examens Médicaux</h1>
-                        <p>Prescrivez et gérez les examens médicaux de vos patients de manière sécurisée et efficace</p>
+                        <h1>
+                            {user.role === 'medecin' ? 'Mes Rendez-vous Médicaux' : 'Mes Rendez-vous'}
+                        </h1>
+                        <p>
+                            {user.role === 'medecin'
+                                ? 'Gérez vos consultations et suivez vos patients'
+                                : 'Consultez vos rendez-vous médicaux'
+                            }
+                        </p>
                     </div>
                 </div>
             </div>
 
             <div className="content-body">
-                {/* En-tête avec statistiques */}
-                <div className="examens-header">
-                    <div className="header-stats">
-                        <div className="stat-card-exam">
-                            <div className="stat-icon">
-                                <i className="fas fa-file-medical-alt"></i>
-                            </div>
-                            <div className="stat-info">
-                                <div className="stat-number">{stats.pending}</div>
-                                <div className="stat-label">En attente</div>
-                            </div>
+                {/* Statistiques */}
+                <div className="stats-grid mb-6">
+                    <div className="stat-card">
+                        <div className="stat-icon blue">
+                            <i className="fas fa-calendar-alt"></i>
                         </div>
-                        <div className="stat-card-exam">
-                            <div className="stat-icon">
-                                <i className="fas fa-check-circle"></i>
-                            </div>
-                            <div className="stat-info">
-                                <div className="stat-number">{stats.completed}</div>
-                                <div className="stat-label">Complétés</div>
-                            </div>
-                        </div>
-                        <div className="stat-card-exam">
-                            <div className="stat-icon">
-                                <i className="fas fa-clock"></i>
-                            </div>
-                            <div className="stat-info">
-                                <div className="stat-number">{stats.urgent}</div>
-                                <div className="stat-label">Urgents</div>
-                            </div>
-                        </div>
-                        <div className="stat-card-exam">
-                            <div className="stat-icon">
-                                <i className="fas fa-chart-line"></i>
-                            </div>
-                            <div className="stat-info">
-                                <div className="stat-number">{stats.rate}%</div>
-                                <div className="stat-label">Taux de réalisation</div>
-                            </div>
+                        <div className="stat-info">
+                            <h3>{stats.total}</h3>
+                            <p>Total rendez-vous</p>
                         </div>
                     </div>
-
-                    <div className="header-actions">
-                        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                            <i className="fas fa-plus-circle"></i> Nouvelle demande
-                        </button>
-                        <div className="action-buttons">
-                            <button className="btn btn-outline">
-                                <i className="fas fa-file-import"></i> Importer
-                            </button>
-                            <button className="btn btn-outline">
-                                <i className="fas fa-file-export"></i> Exporter
-                            </button>
-                            <div className="search-examens">
-                                <i className="fas fa-search"></i>
-                                <input
-                                    type="text"
-                                    placeholder="Rechercher un examen, patient..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            </div>
+                    <div className="stat-card">
+                        <div className="stat-icon green">
+                            <i className="fas fa-check-circle"></i>
+                        </div>
+                        <div className="stat-info">
+                            <h3>{stats.confirme}</h3>
+                            <p>Confirmés</p>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon orange">
+                            <i className="fas fa-clock"></i>
+                        </div>
+                        <div className="stat-info">
+                            <h3>{stats.en_attente}</h3>
+                            <p>En attente</p>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon red">
+                            <i className="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div className="stat-info">
+                            <h3>{stats.urgent}</h3>
+                            <p>Urgents</p>
                         </div>
                     </div>
                 </div>
 
-                {/* Filtres */}
-                <div className="examens-filters">
-                    <div className="filters-container">
-                        <div className="filter-group">
-                            <label>Statut</label>
-                            <div className="filter-chips">
-                                <button
-                                    className={`filter-chip ${activeFilter === 'all' ? 'active' : ''}`}
-                                    onClick={() => setActiveFilter('all')}
-                                >
-                                    Tous
-                                </button>
-                                <button
-                                    className={`filter-chip ${activeFilter === 'pending' ? 'active' : ''}`}
-                                    onClick={() => setActiveFilter('pending')}
-                                >
-                                    <i className="fas fa-clock"></i> En attente
-                                </button>
-                                <button
-                                    className={`filter-chip ${activeFilter === 'scheduled' ? 'active' : ''}`}
-                                    onClick={() => setActiveFilter('scheduled')}
-                                >
-                                    <i className="fas fa-calendar-check"></i> Planifiés
-                                </button>
-                                <button
-                                    className={`filter-chip ${activeFilter === 'completed' ? 'active' : ''}`}
-                                    onClick={() => setActiveFilter('completed')}
-                                >
-                                    <i className="fas fa-check-circle"></i> Terminés
-                                </button>
-                            </div>
-                        </div>
+                {/* Actions et filtres */}
+                <div className="content-card-app mb-6">
+                    <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+                        <h3 className="card-title">Liste des rendez-vous</h3>
+                        {user.role === 'medecin' && (
+                            <button className="btn btn-primary" onClick={() => handleOpenModal()}>
+                                <i className="fas fa-plus"></i> Nouveau rendez-vous
+                            </button>
+                        )}
+                    </div>
 
-                        <div className="filter-group">
-                            <label>Type d'examen</label>
-                            <div className="filter-chips">
-                                <button
-                                    className={`filter-chip type-chip ${activeTypeFilter === 'all' ? 'active' : ''}`}
-                                    onClick={() => setActiveTypeFilter('all')}
-                                >
-                                    Tous
-                                </button>
-                                <button
-                                    className={`filter-chip type-chip ${activeTypeFilter === 'imaging' ? 'active' : ''}`}
-                                    onClick={() => setActiveTypeFilter('imaging')}
-                                >
-                                    <i className="fas fa-x-ray"></i> Imagerie
-                                </button>
-                                <button
-                                    className={`filter-chip type-chip ${activeTypeFilter === 'lab' ? 'active' : ''}`}
-                                    onClick={() => setActiveTypeFilter('lab')}
-                                >
-                                    <i className="fas fa-vial"></i> Laboratoire
-                                </button>
-                                <button
-                                    className={`filter-chip type-chip ${activeTypeFilter === 'cardio' ? 'active' : ''}`}
-                                    onClick={() => setActiveTypeFilter('cardio')}
-                                >
-                                    <i className="fas fa-heartbeat"></i> Cardiologie
-                                </button>
-                            </div>
+                    <div className="flex gap-4 mb-4 flex-wrap">
+                        <div className="search-box flex-1 min-w-[250px]">
+                            <i className="fas fa-search"></i>
+                            <input
+                                type="text"
+                                placeholder="Rechercher..."
+                                className="form-control"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                className={`btn ${activeFilter === 'all' ? 'btn-primary' : 'btn-outline'}`}
+                                onClick={() => setActiveFilter('all')}
+                            >
+                                Tous
+                            </button>
+                            <button
+                                className={`btn ${activeFilter === 'confirme' ? 'btn-primary' : 'btn-outline'}`}
+                                onClick={() => setActiveFilter('confirme')}
+                            >
+                                Confirmés
+                            </button>
+                            <button
+                                className={`btn ${activeFilter === 'en_attente' ? 'btn-primary' : 'btn-outline'}`}
+                                onClick={() => setActiveFilter('en_attente')}
+                            >
+                                En attente
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                {/* Grille des examens */}
-                <div className="examens-container">
-                    <div className="examens-grid">
-                        {filteredExamens.map((examen) => {
-                            const statusBadge = getStatusBadge(examen.status);
-                            const typeTag = getTypeTag(examen.type);
+                    {/* Liste des rendez-vous */}
+                    <div className="space-y-4">
+                        {filteredRdv.map(rdv => {
+                            const statutBadge = getStatutBadge(rdv.statut);
+                            const typeBadge = getTypeBadge(rdv.type);
 
                             return (
-                                <div
-                                    key={examen.id}
-                                    className={`examen-card ${examen.urgent ? 'urgent' : ''}`}
-                                >
-                                    {/* Header */}
-                                    <div className="examen-header">
-                                        <div className={`examen-badge ${statusBadge.class}`}>
-                                            <i className={`fas ${statusBadge.icon}`}></i> {statusBadge.text}
-                                        </div>
-                                        <div className="examen-id">#{examen.id}</div>
-                                    </div>
-
-                                    {/* Body */}
-                                    <div className="examen-body">
-                                        <h3 className="examen-title">{examen.titre}</h3>
-                                        <div className="examen-meta">
-                                            <span className="meta-item">
-                                                <i className="fas fa-user-injured"></i>
-                                                {examen.patient.nom}
-                                            </span>
-                                            <span className="meta-item">
-                                                <i className="fas fa-id-card"></i>
-                                                {examen.patient.id}
-                                            </span>
-                                            <span className="meta-item">
-                                                <i className="fas fa-calendar"></i>
-                                                {examen.date}
-                                            </span>
-                                        </div>
-
-                                        <div className="examen-details">
-                                            <div className="detail-row">
-                                                <span className="detail-label">Type:</span>
-                                                <span className={`detail-value ${typeTag.class}`}>{typeTag.text}</span>
+                                <div key={rdv.id} className="content-card-app card-interactive">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="flex items-start gap-4 flex-1">
+                                            {/* Avatar */}
+                                            <div className="avatar" style={{ width: '60px', height: '60px', fontSize: '1.5rem' }}>
+                                                {user.role === 'medecin' ? rdv.patient.avatar : rdv.medecin.nom.split(' ')[1][0] + rdv.medecin.nom.split(' ')[2][0]}
                                             </div>
-                                            <div className="detail-row">
-                                                <span className="detail-label">Priorité:</span>
-                                                <span className={`detail-value ${getPriorityClass(examen.priorite)}`}>
-                                                    {examen.priorite.charAt(0).toUpperCase() + examen.priorite.slice(1)}
-                                                </span>
-                                            </div>
-                                            <div className="detail-row">
-                                                <span className="detail-label">Service:</span>
-                                                <span className="detail-value">{examen.service}</span>
-                                            </div>
-                                            <div className="detail-row">
-                                                <span className="detail-label">Prescripteur:</span>
-                                                <span className="detail-value">{examen.prescripteur}</span>
-                                            </div>
-                                        </div>
 
-                                        <div className="examen-indications">
-                                            <h4><i className="fas fa-sticky-note"></i> Indications</h4>
-                                            <p>{examen.indications}</p>
-                                        </div>
-
-                                        {examen.preparations && (
-                                            <div className="examen-requirements">
-                                                <h4><i className="fas fa-clipboard-check"></i> Préparations</h4>
-                                                <ul>
-                                                    {examen.preparations.map((prep, idx) => (
-                                                        <li key={idx}>{prep}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-
-                                        {examen.scheduledDate && (
-                                            <div className="examen-schedule">
-                                                <h4><i className="fas fa-clock"></i> Planification</h4>
-                                                <div className="schedule-info">
-                                                    <span><i className="fas fa-hospital"></i> {examen.location}</span>
-                                                    <span><i className="far fa-clock"></i> {examen.scheduledDate}</span>
+                                            {/* Infos */}
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <h4 className="text-lg font-bold">
+                                                        {user.role === 'medecin' ? rdv.patient.nom : rdv.medecin.nom}
+                                                    </h4>
+                                                    <span className={`badge ${statutBadge.class}`}>
+                                                        <i className={`fas ${statutBadge.icon}`}></i> {statutBadge.text}
+                                                    </span>
+                                                    <span className={`badge ${typeBadge.class}`}>
+                                                        {typeBadge.text}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        )}
 
-                                        {examen.resultat && (
-                                            <div className="examen-results">
-                                                <h4><i className="fas fa-chart-line"></i> Résultats disponibles</h4>
-                                                <div className="result-summary">
-                                                    <span className="summary-label">Conclusion:</span>
-                                                    <span className="summary-value">{examen.resultat}</span>
+                                                <p className="text-gray-600 mb-3">{rdv.motif}</p>
+
+                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                    <div>
+                                                        <i className="fas fa-calendar text-blue-600 mr-2"></i>
+                                                        <strong>Date:</strong> {new Date(rdv.date).toLocaleDateString('fr-FR')}
+                                                    </div>
+                                                    <div>
+                                                        <i className="fas fa-clock text-green-600 mr-2"></i>
+                                                        <strong>Heure:</strong> {rdv.heure}
+                                                    </div>
+                                                    <div>
+                                                        <i className="fas fa-hourglass-half text-orange-600 mr-2"></i>
+                                                        <strong>Durée:</strong> {rdv.duree} min
+                                                    </div>
+                                                    <div>
+                                                        <i className="fas fa-map-marker-alt text-red-600 mr-2"></i>
+                                                        <strong>Lieu:</strong> {rdv.lieu}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </div>
 
-                                    {/* Footer */}
-                                    <div className="examen-footer">
-                                        <div className="examen-actions">
-                                            {examen.status === 'pending' && (
-                                                <>
-                                                    <button className="btn btn-sm btn-outline">
-                                                        <i className="fas fa-edit"></i> Modifier
-                                                    </button>
-                                                    <button className="btn btn-sm btn-primary">
-                                                        <i className="fas fa-calendar-plus"></i> Planifier
-                                                    </button>
-                                                    <button className="btn btn-sm btn-outline btn-danger">
-                                                        <i className="fas fa-times"></i> Annuler
-                                                    </button>
-                                                </>
-                                            )}
-                                            {examen.status === 'scheduled' && (
-                                                <>
-                                                    <button className="btn btn-sm btn-outline">
-                                                        <i className="fas fa-calendar-alt"></i> Replanifier
-                                                    </button>
-                                                    <button className="btn btn-sm btn-success">
-                                                        <i className="fas fa-check"></i> Confirmer
-                                                    </button>
-                                                </>
-                                            )}
-                                            {examen.status === 'completed' && (
-                                                <>
-                                                    <button className="btn btn-sm btn-primary">
-                                                        <i className="fas fa-search"></i> Analyser
-                                                    </button>
-                                                    <button className="btn btn-sm btn-outline">
-                                                        <i className="fas fa-download"></i> Télécharger
-                                                    </button>
-                                                </>
-                                            )}
+                                                {rdv.notes && (
+                                                    <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                                                        <strong className="text-sm">Notes:</strong>
+                                                        <p className="text-sm text-gray-600 mt-1">{rdv.notes}</p>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="examen-status">
-                                            <div className={`status-indicator status-${examen.status}`}></div>
-                                            <span>
-                                                {examen.status === 'pending' && 'En attente de planification'}
-                                                {examen.status === 'scheduled' && `Planifié pour le ${examen.scheduledDate?.split('-')[0]}`}
-                                                {examen.status === 'completed' && `Terminé le ${examen.completedDate}`}
-                                            </span>
+
+                                        {/* Actions */}
+                                        <div className="flex flex-col gap-2">
+                                            <button
+                                                className="btn btn-outline btn-sm"
+                                                onClick={() => handleViewDetails(rdv)}
+                                            >
+                                                <i className="fas fa-eye"></i>
+                                            </button>
+
+                                            {user.role === 'medecin' && (
+                                                <>
+                                                    <button
+                                                        className="btn btn-outline btn-sm"
+                                                        onClick={() => handleOpenModal(rdv)}
+                                                    >
+                                                        <i className="fas fa-edit"></i>
+                                                    </button>
+
+                                                    {rdv.statut === 'en_attente' && (
+                                                        <button
+                                                            className="btn btn-success btn-sm"
+                                                            onClick={() => handleConfirmer(rdv.id)}
+                                                        >
+                                                            <i className="fas fa-check"></i>
+                                                        </button>
+                                                    )}
+
+                                                    {rdv.statut !== 'annule' && (
+                                                        <button
+                                                            className="btn btn-danger btn-sm"
+                                                            onClick={() => handleAnnuler(rdv.id)}
+                                                        >
+                                                            <i className="fas fa-times"></i>
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             );
                         })}
+
+                        {filteredRdv.length === 0 && (
+                            <div className="text-center py-12 text-gray-500">
+                                <i className="fas fa-calendar-times text-6xl mb-4 opacity-30"></i>
+                                <p>Aucun rendez-vous trouvé</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Modale Nouvelle Demande - Multi-étapes */}
-            {showModal && (
+            {/* Modal Nouveau/Modifier RDV */}
+            {showModal && user.role === 'medecin' && (
                 <div className="modal-overlay">
-                    <div className="modal-container modal-xl">
+                    <div className="modal-container">
                         <div className="modal-header">
-                            <h3><i className="fas fa-file-medical-alt"></i> Nouvelle demande d'examen médical</h3>
-                            <button className="modal-close" onClick={() => { setShowModal(false); resetForm(); }}>
+                            <h3>
+                                <i className="fas fa-calendar-plus"></i>
+                                {selectedRdv ? 'Modifier le rendez-vous' : 'Nouveau rendez-vous'}
+                            </h3>
+                            <button className="modal-close" onClick={() => setShowModal(false)}>
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="modal-body">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="form-group col-span-2">
+                                        <label>Patient *</label>
+                                        <select
+                                            className="form-control"
+                                            value={formData.patient}
+                                            onChange={(e) => setFormData({...formData, patient: e.target.value})}
+                                            required
+                                        >
+                                            <option value="">Sélectionner un patient</option>
+                                            {mockPatients.map(p => (
+                                                <option key={p.id} value={p.id}>{p.nom}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Type de rendez-vous *</label>
+                                        <select
+                                            className="form-control"
+                                            value={formData.type}
+                                            onChange={(e) => setFormData({...formData, type: e.target.value})}
+                                            required
+                                        >
+                                            <option value="consultation">Consultation</option>
+                                            <option value="controle">Contrôle</option>
+                                            <option value="suivi">Suivi</option>
+                                            <option value="urgence">Urgence</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Durée (minutes) *</label>
+                                        <select
+                                            className="form-control"
+                                            value={formData.duree}
+                                            onChange={(e) => setFormData({...formData, duree: e.target.value})}
+                                            required
+                                        >
+                                            <option value="15">15 min</option>
+                                            <option value="30">30 min</option>
+                                            <option value="45">45 min</option>
+                                            <option value="60">1 heure</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group col-span-2">
+                                        <label>Motif de consultation *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={formData.motif}
+                                            onChange={(e) => setFormData({...formData, motif: e.target.value})}
+                                            placeholder="Ex: Suivi cardiologique"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Date *</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={formData.dateRdv}
+                                            onChange={(e) => setFormData({...formData, dateRdv: e.target.value})}
+                                            min={new Date().toISOString().split('T')[0]}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Heure *</label>
+                                        <select
+                                            className="form-control"
+                                            value={formData.heureRdv}
+                                            onChange={(e) => setFormData({...formData, heureRdv: e.target.value})}
+                                            required
+                                        >
+                                            {creneauxDisponibles.map(creneau => (
+                                                <option key={creneau} value={creneau}>{creneau}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group col-span-2">
+                                        <label>Lieu</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={formData.lieu}
+                                            onChange={(e) => setFormData({...formData, lieu: e.target.value})}
+                                            placeholder="Cabinet médical"
+                                        />
+                                    </div>
+
+                                    <div className="form-group col-span-2">
+                                        <label>Notes</label>
+                                        <textarea
+                                            className="form-control"
+                                            rows="3"
+                                            value={formData.notes}
+                                            onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                                            placeholder="Notes pour le patient..."
+                                        />
+                                    </div>
+
+                                    <div className="form-group col-span-2">
+                                        <label className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.rappel}
+                                                onChange={(e) => setFormData({...formData, rappel: e.target.checked})}
+                                            />
+                                            <span>Envoyer un rappel au patient</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>
+                                    Annuler
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    <i className="fas fa-save"></i>
+                                    {selectedRdv ? 'Modifier' : 'Créer'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Détails */}
+            {showDetailsModal && selectedRdv && (
+                <div className="modal-overlay" onClick={() => setShowDetailsModal(false)}>
+                    <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>
+                                <i className="fas fa-calendar-alt"></i>
+                                Détails du rendez-vous
+                            </h3>
+                            <button className="modal-close" onClick={() => setShowDetailsModal(false)}>
                                 <i className="fas fa-times"></i>
                             </button>
                         </div>
                         <div className="modal-body">
-                            <div className="demande-form">
-                                {/* Étape 1: Informations patient */}
-                                {currentStep === 1 && (
-                                    <div className="form-step active">
-                                        <div className="step-header">
-                                            <div className="step-number">1</div>
-                                            <div className="step-title">
-                                                <h4>Informations patient</h4>
-                                                <p>Sélectionnez le patient et vérifiez ses informations</p>
-                                            </div>
-                                        </div>
+                            <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+                                <div className="avatar" style={{ width: '80px', height: '80px', fontSize: '2rem' }}>
+                                    {user.role === 'medecin' ? selectedRdv.patient.avatar : 'Dr'}
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold">
+                                        {user.role === 'medecin' ? selectedRdv.patient.nom : selectedRdv.medecin.nom}
+                                    </h2>
+                                    <p className="text-gray-600">
+                                        {user.role === 'medecin'
+                                            ? `Tél: ${selectedRdv.patient.telephone}`
+                                            : selectedRdv.medecin.specialite
+                                        }
+                                    </p>
+                                </div>
+                            </div>
 
-                                        <div className="step-content">
-                                            <div className="patient-selection">
-                                                {mockPatients.map((patient) => (
-                                                    <div
-                                                        key={patient.id}
-                                                        className={`patient-card ${selectedPatient?.id === patient.id ? 'selected' : ''}`}
-                                                        onClick={() => setSelectedPatient(patient)}
-                                                    >
-                                                        <div className="patient-avatar">{patient.avatar}</div>
-                                                        <div className="patient-info">
-                                                            <h5>{patient.nom}</h5>
-                                                            <div className="patient-details">
-                                                                <span>{patient.age} ans - {patient.sexe}</span>
-                                                                <span>ID: {patient.id}</span>
-                                                                <span>Groupe sanguin: {patient.groupeSanguin}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="patient-more">
-                                                            <i className="fas fa-chevron-right"></i>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="info-card col-span-2">
+                                    <h4>Informations</h4>
+                                    <p><strong>ID:</strong> {selectedRdv.id}</p>
+                                    <p><strong>Type:</strong> {getTypeBadge(selectedRdv.type).text}</p>
+                                    <p><strong>Motif:</strong> {selectedRdv.motif}</p>
+                                    <p><strong>Statut:</strong> <span className={`badge ${getStatutBadge(selectedRdv.statut).class}`}>
+                                        {getStatutBadge(selectedRdv.statut).text}
+                                    </span></p>
+                                </div>
+
+                                <div className="info-card">
+                                    <h4>Date et heure</h4>
+                                    <p><i className="fas fa-calendar mr-2"></i>{new Date(selectedRdv.date).toLocaleDateString('fr-FR', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}</p>
+                                    <p><i className="fas fa-clock mr-2"></i>{selectedRdv.heure}</p>
+                                    <p><i className="fas fa-hourglass-half mr-2"></i>{selectedRdv.duree} minutes</p>
+                                </div>
+
+                                <div className="info-card">
+                                    <h4>Lieu</h4>
+                                    <p><i className="fas fa-map-marker-alt mr-2"></i>{selectedRdv.lieu}</p>
+                                </div>
+
+                                {selectedRdv.notes && (
+                                    <div className="info-card col-span-2">
+                                        <h4>Notes</h4>
+                                        <p>{selectedRdv.notes}</p>
                                     </div>
                                 )}
 
-                                {/* Étape 2: Type d'examen */}
-                                {currentStep === 2 && (
-                                    <div className="form-step active">
-                                        <div className="step-header">
-                                            <div className="step-number">2</div>
-                                            <div className="step-title">
-                                                <h4>Type d'examen</h4>
-                                                <p>Sélectionnez la catégorie et le type d'examen</p>
-                                            </div>
+                                // src/pages/common/Examens.jsx - PARTIE FINALE
+                                // Cette partie complète le modal des détails et ajoute les fonctionnalités manquantes
+
+                                // À ajouter après la ligne 1198 du document index 31
+
+                                <div className="info-card col-span-2">
+                                    <h4>Informations complémentaires</h4>
+                                    <div className="grid grid-cols-2 gap-4 mt-3">
+                                        <div>
+                                            <span className="text-sm text-gray-600">Date de création:</span>
+                                            <p className="font-semibold">{selectedRdv.creeLe}</p>
                                         </div>
-
-                                        <div className="step-content">
-                                            <div className="category-grid">
-                                                {categories.map((category) => (
-                                                    <div
-                                                        key={category.id}
-                                                        className={`category-card ${selectedCategory === category.id ? 'selected' : ''}`}
-                                                        onClick={() => {
-                                                            setSelectedCategory(category.id);
-                                                            setSelectedExamType(null);
-                                                        }}
-                                                    >
-                                                        <div className="category-icon">
-                                                            <i className={category.icon}></i>
-                                                        </div>
-                                                        <h5>{category.nom}</h5>
-                                                        <p>{category.description}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            <div className="exam-type-list" style={{ marginTop: '2rem' }}>
-                                                {examTypesByCategory[selectedCategory]?.map((examType) => (
-                                                   <div key={examType.id}
-                                                               className={`exam-type ${selectedExamType?.id === examType.id ? 'selected' : ''}`}
-                                                               onClick={() => setSelectedExamType(examType)}
-                                                    >
-                                                        <div className="type-checkbox">
-                                                            <i className="fas fa-check"></i>
-                                                        </div>
-                                                        <div className="type-info">
-                                                            <h6>{examType.nom}</h6>
-                                                            <p>{examType.description}</p>
-                                                            <span className="type-duration">≈ {examType.duree}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                        <div>
+                                            <span className="text-sm text-gray-600">Rappel envoyé:</span>
+                                            <p className="font-semibold">
+                                                {selectedRdv.rappelEnvoye ? (
+                                                    <span className="text-green-600">
+                                                        <i className="fas fa-check-circle"></i> Oui
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-orange-600">
+                                                        <i className="fas fa-clock"></i> Non
+                                                    </span>
+                                                )}
+                                            </p>
                                         </div>
                                     </div>
-                                )}
-
-                                {/* Étape 3: Détails et indications */}
-                                {currentStep === 3 && (
-                                    <div className="form-step active">
-                                        <div className="step-header">
-                                            <div className="step-number">3</div>
-                                            <div className="step-title">
-                                                <h4>Détails et indications</h4>
-                                                <p>Précisez les indications et les paramètres</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="step-content">
-                                            <div className="form-group">
-                                                <label>Priorité</label>
-                                                <div className="priority-selector">
-                                                    <label className="priority-option">
-                                                        <input
-                                                            type="radio"
-                                                            name="priority"
-                                                            value="normale"
-                                                            checked={formData.priority === 'normale'}
-                                                            onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                                                        />
-                                                        <div className="priority-card">
-                                                            <i className="fas fa-clock"></i>
-                                                            <span>Normale</span>
-                                                            <p>À réaliser dans les 15 jours</p>
-                                                        </div>
-                                                    </label>
-                                                    <label className="priority-option">
-                                                        <input
-                                                            type="radio"
-                                                            name="priority"
-                                                            value="haute"
-                                                            checked={formData.priority === 'haute'}
-                                                            onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                                                        />
-                                                        <div className="priority-card">
-                                                            <i className="fas fa-exclamation-triangle"></i>
-                                                            <span>Haute</span>
-                                                            <p>À réaliser sous 48h</p>
-                                                        </div>
-                                                    </label>
-                                                    <label className="priority-option">
-                                                        <input
-                                                            type="radio"
-                                                            name="priority"
-                                                            value="urgente"
-                                                            checked={formData.priority === 'urgente'}
-                                                            onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                                                        />
-                                                        <div className="priority-card">
-                                                            <i className="fas fa-exclamation-circle"></i>
-                                                            <span>Urgente</span>
-                                                            <p>À réaliser immédiatement</p>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label>Indications médicales</label>
-                                                <textarea
-                                                    className="form-control"
-                                                    rows="4"
-                                                    placeholder="Décrivez les symptômes, l'histoire clinique, les raisons de l'examen..."
-                                                    value={formData.indications}
-                                                    onChange={(e) => setFormData({...formData, indications: e.target.value})}
-                                                />
-                                            </div>
-
-                                            <div className="form-row">
-                                                <div className="form-group">
-                                                    <label>Question clinique</label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="Ex: Recherche de métastases cérébrales"
-                                                        value={formData.questionClinique}
-                                                        onChange={(e) => setFormData({...formData, questionClinique: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div className="form-group">
-                                                    <label>Région anatomique</label>
-                                                    <select
-                                                        className="form-control"
-                                                        value={formData.regionAnatomique}
-                                                        onChange={(e) => setFormData({...formData, regionAnatomique: e.target.value})}
-                                                    >
-                                                        <option value="">Sélectionner</option>
-                                                        <option value="head">Tête/Encéphale</option>
-                                                        <option value="thorax">Thorax</option>
-                                                        <option value="abdomen">Abdomen</option>
-                                                        <option value="pelvis">Pelvis</option>
-                                                        <option value="members">Membres</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label>Préparations spécifiques</label>
-                                                <div className="preparation-options">
-                                                    <label className="checkbox-label">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={formData.preparations.includes('À jeun (6-12h)')}
-                                                            onChange={() => handlePreparationChange('À jeun (6-12h)')}
-                                                        />
-                                                        <span className="checkbox-custom"></span>
-                                                        À jeun (6-12h)
-                                                    </label>
-                                                    <label className="checkbox-label">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={formData.preparations.includes('Produit de contraste')}
-                                                            onChange={() => handlePreparationChange('Produit de contraste')}
-                                                        />
-                                                        <span className="checkbox-custom"></span>
-                                                        Produit de contraste
-                                                    </label>
-                                                    <label className="checkbox-label">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={formData.preparations.includes('Test d\'allergie requis')}
-                                                            onChange={() => handlePreparationChange('Test d\'allergie requis')}
-                                                        />
-                                                        <span className="checkbox-custom"></span>
-                                                        Test d'allergie requis
-                                                    </label>
-                                                    <label className="checkbox-label">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={formData.preparations.includes('Arrêt médicamenteux')}
-                                                            onChange={() => handlePreparationChange('Arrêt médicamenteux')}
-                                                        />
-                                                        <span className="checkbox-custom"></span>
-                                                        Arrêt médicamenteux
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Étape 4: Planification */}
-                                {currentStep === 4 && (
-                                    <div className="form-step active">
-                                        <div className="step-header">
-                                            <div className="step-number">4</div>
-                                            <div className="step-title">
-                                                <h4>Planification</h4>
-                                                <p>Planifiez la date et le lieu de l'examen</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="step-content">
-                                            <div className="form-row">
-                                                <div className="form-group">
-                                                    <label>Service demandeur</label>
-                                                    <select
-                                                        className="form-control"
-                                                        value={formData.service}
-                                                        onChange={(e) => setFormData({...formData, service: e.target.value})}
-                                                    >
-                                                        <option value="neurology">Neurologie</option>
-                                                        <option value="cardiology">Cardiologie</option>
-                                                        <option value="internal">Médecine interne</option>
-                                                        <option value="surgery">Chirurgie</option>
-                                                    </select>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label>Prescripteur</label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        value={formData.prescripteur}
-                                                        readOnly
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label>Lieu de réalisation</label>
-                                                <div className="location-options">
-                                                    <label className="radio-label">
-                                                        <input
-                                                            type="radio"
-                                                            name="location"
-                                                            value="hospital"
-                                                            checked={formData.location === 'hospital'}
-                                                            onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                                        />
-                                                        <span className="radio-custom"></span>
-                                                        <div className="location-card">
-                                                            <i className="fas fa-hospital"></i>
-                                                            <div>
-                                                                <strong>Hôpital Central</strong>
-                                                                <p>Service d'imagerie médicale</p>
-                                                                <span className="location-info">Disponibilité: Élevée</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
-                                                    <label className="radio-label">
-                                                        <input
-                                                            type="radio"
-                                                            name="location"
-                                                            value="clinic"
-                                                            checked={formData.location === 'clinic'}
-                                                            onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                                        />
-                                                        <span className="radio-custom"></span>
-                                                        <div className="location-card">
-                                                            <i className="fas fa-clinic-medical"></i>
-                                                            <div>
-                                                                <strong>Clinique du Parc</strong>
-                                                                <p>Centre d'imagerie privé</p>
-                                                                <span className="location-info">Délai: 3 jours</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label>Date souhaitée</label>
-                                                <div className="date-selection">
-                                                    <input
-                                                        type="date"
-                                                        className="form-control"
-                                                        value={formData.datePreferee}
-                                                        onChange={(e) => setFormData({...formData, datePreferee: e.target.value})}
-                                                    />
-                                                    <div className="date-suggestions">
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-sm btn-outline"
-                                                            onClick={() => setFormData({...formData, datePreferee: addDaysToDate(1)})}
-                                                        >
-                                                            Demain
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-sm btn-outline"
-                                                            onClick={() => setFormData({...formData, datePreferee: addDaysToDate(3)})}
-                                                        >
-                                                            Dans 3 jours
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-sm btn-outline"
-                                                            onClick={() => setFormData({...formData, datePreferee: addDaysToDate(7)})}
-                                                        >
-                                                            Dans 1 semaine
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label>Créneau horaire</label>
-                                                <div className="time-slots">
-                                                    <div className="slot-grid">
-                                                        {creneauxHoraires.map((creneau) => (
-                                                            <div
-                                                                key={creneau}
-                                                                className={`time-slot ${formData.creneauHoraire === creneau ? 'selected' : ''}`}
-                                                                onClick={() => setFormData({...formData, creneauHoraire: creneau})}
-                                                            >
-                                                                {creneau}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <label>Instructions pour le patient</label>
-                                                <textarea
-                                                    className="form-control"
-                                                    rows="3"
-                                                    placeholder="Instructions spécifiques à communiquer au patient..."
-                                                    value={formData.instructions}
-                                                    onChange={(e) => setFormData({...formData, instructions: e.target.value})}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                </div>
                             </div>
                         </div>
-
-                        {/* Footer avec navigation */}
                         <div className="modal-footer">
-                            <div className="step-navigation">
-                                {currentStep > 1 && (
-                                    <button className="btn btn-outline" onClick={prevStep}>
-                                        <i className="fas fa-arrow-left"></i> Précédent
-                                    </button>
-                                )}
-                                <div className="step-progress">
-                                    <div className="progress-bar">
-                                        <div
-                                            className="progress-fill"
-                                            style={{width: `${((currentStep - 1) / 3) * 100}%`}}
-                                        ></div>
-                                    </div>
-                                    <span className="step-counter">Étape {currentStep}/4</span>
-                                </div>
-                                {currentStep < 4 ? (
-                                    <button className="btn btn-primary" onClick={nextStep}>
-                                        Suivant <i className="fas fa-arrow-right"></i>
-                                    </button>
-                                ) : (
-                                    <button className="btn btn-success" onClick={handleSubmit}>
-                                        <i className="fas fa-paper-plane"></i> Envoyer la demande
-                                    </button>
-                                )}
-                            </div>
+                            <button
+                                className="btn btn-outline"
+                                onClick={() => setShowDetailsModal(false)}
+                            >
+                                Fermer
+                            </button>
+                            {user.role === 'medecin' && (
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => {
+                                        setShowDetailsModal(false);
+                                        handleOpenModal(selectedRdv);
+                                    }}
+                                >
+                                    <i className="fas fa-edit"></i> Modifier
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
