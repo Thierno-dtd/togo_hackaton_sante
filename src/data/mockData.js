@@ -6,7 +6,7 @@ export const MOCK_USERS = {
     prenom: 'Touna',
     email: 'begni.touna@lamesse.com',
     role: 'medecin',
-    avatar: 'JD',
+    avatar: 'BT',
     specialite: 'Cardiologie',
     telephone: '+228 91 45 38 82',
     numeroOrdre: 'ORD-12345'
@@ -17,7 +17,7 @@ export const MOCK_USERS = {
     prenom: 'Afi',
     email: 'bima.afi@gmail.com',
     role: 'patient',
-    avatar: 'MM',
+    avatar: 'BA',
     age: 35,
     dateNaissance: '1989-05-15',
     groupeSanguin: 'A+',
@@ -29,7 +29,7 @@ export const MOCK_USERS = {
     prenom: 'Mantoba',
     email: 'akossiwa.montoba@lamesse.com',
     role: 'pharmacien',
-    avatar: 'SD',
+    avatar: 'AM',
     pharmacie: 'Pharmacie Centrale',
     adresse: 'B.P 2123 Tokoin, Lomé',
     numeroOrdre: 'PHARM-67890'

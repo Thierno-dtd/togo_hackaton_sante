@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 
 const MainLayout = () => {
     const location = useLocation();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
 
     // Get page title from route
     const getPageTitle = () => {
@@ -45,9 +50,12 @@ const MainLayout = () => {
     return (
         <div id="app-page">
             <div className="app-container">
-                <Sidebar />
+                <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 <div className="main-content">
-                    <TopBar pageTitle={getPageTitle()} />
+                    <TopBar
+                        pageTitle={getPageTitle()}
+                        onMenuToggle={toggleSidebar}
+                    />
                     <div className="content-area">
                         <Outlet />
                     </div>

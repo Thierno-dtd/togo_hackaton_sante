@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { NOTIFICATIONS } from '../../data/mockData';
 
-const TopBar = ({ pageTitle }) => {
+const TopBar = ({ pageTitle, onMenuToggle }) => {
     const { logout, user } = useAuth();
     const [showNotifications, setShowNotifications] = useState(false);
 
@@ -15,6 +15,14 @@ const TopBar = ({ pageTitle }) => {
 
     return (
         <div className="top-bar">
+            <button
+                className="menu-toggle md:hidden"
+                onClick={onMenuToggle}
+                aria-label="Toggle menu"
+            >
+                <i className="fas fa-bars"></i>
+            </button>
+
             <div className="page-title">{pageTitle}</div>
 
             <div className="top-bar-actions">
@@ -52,8 +60,8 @@ const TopBar = ({ pageTitle }) => {
                                                 <h5>{notif.title}</h5>
                                                 <p>{notif.message}</p>
                                                 <span className="notif-time">
-                          {formatRelativeTime(notif.date)}
-                        </span>
+                                                    {formatRelativeTime(notif.date)}
+                                                </span>
                                             </div>
                                         </div>
                                     ))
@@ -68,15 +76,16 @@ const TopBar = ({ pageTitle }) => {
                     )}
                 </div>
 
-                <button className="btn btn-outline" onClick={logout}>
-                    <i className="fas fa-sign-out-alt"></i> Déconnexion
+                <button className="btn btn-outline" onClick={logout} id="logout-btn">
+                    <i className="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
                 </button>
             </div>
         </div>
     );
 };
 
-// Helper functions
+// Helper functions restent identiques
 const getNotificationIcon = (type) => {
     const icons = {
         info: 'fas fa-info-circle',
