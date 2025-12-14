@@ -11,6 +11,13 @@ export const MENU_CONFIG = {
                     route: '/dashboard'
                 },
                 {
+                    id: 'diagnostic',
+                    label: 'Diagnostic IA',
+                    icon: 'fas fa-stethoscope',
+                    badge: 'Dr',
+                    route: '/diagnostic-ia'
+                },
+                {
                     id: 'expert',
                     label: 'Expert Médical',
                     icon: 'fas fa-comments',
@@ -82,12 +89,6 @@ export const MENU_CONFIG = {
                     label: 'Tableau de bord',
                     icon: 'fas fa-tachometer-alt',
                     route: '/dashboard'
-                },
-                {
-                    id: 'diagnostic',
-                    label: 'Diagnostic IA',
-                    icon: 'fas fa-stethoscope',
-                    route: '/diagnostic-ia'
                 },
                 {
                     id: 'expert',
