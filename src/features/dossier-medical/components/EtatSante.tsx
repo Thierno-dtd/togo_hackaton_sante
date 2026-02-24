@@ -1,36 +1,38 @@
 import React from 'react';
-
-interface HealthCategory {
-  nom: string;
-  score: number;
-  icon: string;
-  color: string;
-}
-
-interface HealthData {
-  score: number;
-  tendance: string;
-  categories: HealthCategory[];
-  recommandations: string[];
-}
+import { useAuthStore } from '@core/auth/auth.store';
+import { useEtatSante, useMarquerAlerteLue } from '@features/patient/hooks/useEtatSante';
 
 const EtatSante: React.FC = () => {
-    const healthData: HealthData = {
-        score: 85,
-        tendance: 'stable',
-        categories: [
-            { nom: 'Cardiovasculaire', score: 90, icon: 'fas fa-heartbeat', color: 'green' },
-            { nom: 'Respiratoire', score: 85, icon: 'fas fa-lungs', color: 'green' },
-            { nom: 'Métabolique', score: 75, icon: 'fas fa-fire', color: 'orange' },
-            { nom: 'Immunité', score: 88, icon: 'fas fa-shield-alt', color: 'green' }
-        ],
-        recommandations: [
-            'Continuer l\'activité physique régulière',
-            'Surveiller la glycémie',
-            'Maintenir une alimentation équilibrée',
-            'Consultation de contrôle dans 3 mois'
-        ]
-    };
+    const user = useAuthStore((s) => s.user);
+    const { data, isLoading, error } = useEtatSante(user?.id);
+    const marquerLue = useMarquerAlerteLue(user?.id ?? '');
+
+    if (isLoading) {
+        return (
+            <div className="page-content">
+                <div className="content-body text-center py-12">
+                    <i className="fas fa-spinner fa-spin text-3xl text-primary"></i>
+                    <p className="mt-4">Chargement de votre état de santé...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !data) {
+        return (
+            <div className="page-content">
+                <div className="content-body">
+                    <div className="alert alert-danger">
+                        <i className="fas fa-exclamation-circle"></i>
+                        <span>Impossible de charger les données de santé</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const scoreLabel = data.score.global >= 80 ? 'Excellent' : data.score.global >= 60 ? 'Bon' : 'À surveiller';
+    const scoreColor = data.score.global >= 80 ? '#10b981' : data.score.global >= 60 ? '#f59e0b' : '#ef4444';
 
     return (
         <div className="page-content">
@@ -47,6 +49,26 @@ const EtatSante: React.FC = () => {
             </div>
 
             <div className="content-body">
+                {/* Alertes non lues */}
+                {data.alertes.filter((a) => !a.lue).length > 0 && (
+                    <div className="mb-6">
+                        {data.alertes.filter((a) => !a.lue).map((alerte) => (
+                            <div key={alerte.id} className={`alert alert-${alerte.type} mb-2 flex justify-between items-center`}>
+                                <div>
+                                    <i className={`fas ${alerte.type === 'danger' ? 'fa-exclamation-circle' : alerte.type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}`}></i>
+                                    <span className="ml-2">{alerte.message}</span>
+                                </div>
+                                <button
+                                    className="btn btn-sm btn-outline"
+                                    onClick={() => marquerLue.mutate(alerte.id)}
+                                >
+                                    <i className="fas fa-check"></i>
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {/* Score global */}
                 <div className="content-card-app text-center mb-6">
                     <h3 className="card-title mb-4">Score de santé global</h3>
@@ -57,45 +79,59 @@ const EtatSante: React.FC = () => {
                                 <circle
                                     cx="100" cy="100" r="90"
                                     fill="none"
-                                    stroke="#10b981"
+                                    stroke={scoreColor}
                                     strokeWidth="20"
-                                    strokeDasharray={`${healthData.score * 5.65} 565`}
+                                    strokeDasharray={`${data.score.global * 5.65} 565`}
                                     strokeLinecap="round"
                                     transform="rotate(-90 100 100)"
                                 />
                             </svg>
                             <div className="score-value">
-                                <span className="score-number">{healthData.score}</span>
+                                <span className="score-number">{data.score.global}</span>
                                 <span className="score-max">/100</span>
                             </div>
                         </div>
                         <p className="mt-4 text-lg">
-                            État de santé: <span className="badge badge-success">Excellent</span>
+                            État de santé: <span className={`badge ${data.score.global >= 80 ? 'badge-success' : data.score.global >= 60 ? 'badge-warning' : 'badge-danger'}`}>{scoreLabel}</span>
                         </p>
                     </div>
                 </div>
 
-                {/* Catégories */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {healthData.categories.map((cat, idx) => (
-                        <div key={idx} className="content-card-app">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                    <div className={`health-icon ${cat.color}`}>
-                                        <i className={cat.icon}></i>
-                                    </div>
-                                    <h4>{cat.nom}</h4>
+                {/* Indicateurs clés */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    {data.indicateurs.map((ind) => (
+                        <div key={ind.id} className="content-card-app">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className={`health-icon ${ind.status === 'normal' ? 'green' : ind.status === 'attention' ? 'orange' : 'red'}`}>
+                                    <i className={ind.icon}></i>
                                 </div>
-                                <span className="text-2xl font-bold">{cat.score}%</span>
+                                <div>
+                                    <p className="text-sm text-gray-500">{ind.label}</p>
+                                    <p className="text-xl font-bold">{ind.valeur}</p>
+                                </div>
                             </div>
-                            <div className="progress-bar">
-                                <div
-                                    className={`progress-fill ${cat.color}`}
-                                    style={{width: `${cat.score}%`}}
-                                ></div>
-                            </div>
+                            <p className="text-xs text-gray-400">{ind.description}</p>
                         </div>
                     ))}
+                </div>
+
+                {/* Catégories */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {data.score.categories.map((cat, idx) => {
+                        const pct = Math.round((cat.score / cat.maxScore) * 100);
+                        const catColor = pct >= 80 ? 'green' : pct >= 60 ? 'orange' : 'red';
+                        return (
+                            <div key={idx} className="content-card-app">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h4>{cat.label}</h4>
+                                    <span className="text-2xl font-bold">{pct}%</span>
+                                </div>
+                                <div className="progress-bar">
+                                    <div className={`progress-fill ${catColor}`} style={{ width: `${pct}%` }}></div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* Recommandations */}
@@ -104,7 +140,7 @@ const EtatSante: React.FC = () => {
                         <i className="fas fa-lightbulb"></i> Recommandations
                     </h3>
                     <ul className="recommandations-list">
-                        {healthData.recommandations.map((rec, idx) => (
+                        {data.recommandations.map((rec, idx) => (
                             <li key={idx}>
                                 <i className="fas fa-check-circle"></i>
                                 <span>{rec}</span>

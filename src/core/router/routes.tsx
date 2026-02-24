@@ -12,13 +12,19 @@ import { LoginPage } from '@features/auth';
 import Dashboard from '@features/dashboard/components/Dashboard';
 import ExpertMedical from '@features/expert-medical/components/ExpertMedical';
 import Examens from '@features/examens/components/Examens';
-import Disponibilites from '@features/disponibilites/components/Disponibilites';
-import VerificationQR from '@features/verification-qr/components/VerificationQR';
+// VerificationQR is handled via pharmacien/scan-qr route
 
 // Patient
 import { DossierMedical } from '@features/dossier-medical';
 import EtatSante from '@features/dossier-medical/components/EtatSante';
 import Medicaments from '@features/dossier-medical/components/Medicaments';
+import {
+  GestionAcces,
+  RendezVousPatient,
+  OrdonnancesPatient,
+  ExpertMedicalPatient,
+  DisponibilitesPatient,
+} from '@features/patient';
 
 // Medecin
 import DossiersPatients from '@features/dossier-medical/components/DossiersPatients';
@@ -71,8 +77,6 @@ const AppRoutes: React.FC = () => {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="expert-medical" element={<ExpertMedical />} />
         <Route path="examens" element={<Examens />} />
-        <Route path="disponibilites" element={<Disponibilites />} />
-        <Route path="verification-qr" element={<VerificationQR />} />
 
         {/* Patient routes */}
         <Route
@@ -96,6 +100,46 @@ const AppRoutes: React.FC = () => {
           element={
             <ProtectedRoute allowedRoles={['patient']}>
               <Medicaments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="patient/disponibilites"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <DisponibilitesPatient />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="patient/gestion-acces"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <GestionAcces />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="patient/rendez-vous"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <RendezVousPatient />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="patient/ordonnances"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <OrdonnancesPatient />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="patient/expert-medical"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <ExpertMedicalPatient />
             </ProtectedRoute>
           }
         />

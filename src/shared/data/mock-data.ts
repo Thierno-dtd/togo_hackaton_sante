@@ -62,12 +62,15 @@ export const DASHBOARD_CARDS: { common: DashboardCard[] } & Partial<Record<strin
   common: [
     { id: 'expert-medical', title: 'Expert Médical', description: 'Chatbot médical avec modes patient et médecin pour des conseils adaptés.', icon: 'fas fa-comments', route: '/expert-medical', color: 'green', roles: ['medecin', 'patient', 'pharmacien'] },
     { id: 'examens', title: 'Examens médicaux', description: "Créez, planifiez et gérez l'historique de vos examens médicaux.", icon: 'fas fa-file-medical', route: '/examens', color: 'purple', roles: ['medecin', 'patient'] },
-    { id: 'disponibilites', title: 'Disponibilités des centres', description: 'Trouvez les cliniques, hôpitaux et pharmacies disponibles près de vous.', icon: 'fas fa-map-marker-alt', route: '/disponibilites', color: 'orange', roles: ['medecin', 'patient'] },
   ],
   patient: [
     { id: 'dossier-medical', title: 'Mon dossier médical', description: 'Consultez votre historique médical complet, crypté et sécurisé.', icon: 'fas fa-folder-open', route: '/patient/dossier', color: 'blue', badge: 'Pa' },
     { id: 'etat-sante', title: 'Mon état de santé', description: "Visualisez l'état prédictif de votre santé basé sur vos analyses.", icon: 'fas fa-heartbeat', route: '/patient/etat-sante', color: 'red', badge: 'Pa' },
-    { id: 'medicaments', title: 'Analyser mes médicaments', description: 'Vérifiez les interactions et obtenez des informations sur vos médicaments.', icon: 'fas fa-pills', route: '/patient/medicaments', color: 'green', badge: 'Pa' },
+    { id: 'rendez-vous', title: 'Mes rendez-vous', description: 'Gérez vos consultations et suivis médicaux.', icon: 'fas fa-calendar-check', route: '/patient/rendez-vous', color: 'teal', badge: 'Pa' },
+    { id: 'medicaments', title: 'Mes médicaments', description: 'Suivez vos traitements et rappels de prise.', icon: 'fas fa-pills', route: '/patient/medicaments', color: 'green', badge: 'Pa' },
+    { id: 'ordonnances', title: 'Mes ordonnances', description: 'Consultez vos prescriptions et générez vos QR codes.', icon: 'fas fa-prescription', route: '/patient/ordonnances', color: 'amber', badge: 'Pa' },
+    { id: 'gestion-acces', title: 'Gestion des accès', description: 'Contrôlez qui accède à votre dossier médical.', icon: 'fas fa-shield-alt', route: '/patient/gestion-acces', color: 'indigo', badge: 'Pa' },
+    { id: 'disponibilites', title: 'Centres de santé', description: 'Trouvez les établissements de santé disponibles près de vous.', icon: 'fas fa-map-marker-alt', route: '/patient/disponibilites', color: 'orange', badge: 'Pa' },
   ],
   medecin: [
     { id: 'diagnostic-ia', title: 'Diagnostic IA', description: "Analysez des images médicales avec l'IA pour un diagnostic précis et rapide.", icon: 'fas fa-stethoscope', route: '/medecin/diagnostic-ia', color: 'blue', badge: 'Dr' },
@@ -149,13 +152,6 @@ export const MENU_CONFIG: MenuConfig = {
       section: 'Médicaments & Ordonnances',
       items: [
         { id: 'ordonnances', label: 'Ordonnances QR', icon: 'fas fa-prescription', route: '/medecin/ordonnances' },
-        { id: 'qr-verification', label: 'Vérification QR', icon: 'fas fa-qrcode', route: '/verification-qr' },
-      ],
-    },
-    {
-      section: 'Santé & Disponibilités',
-      items: [
-        { id: 'disponibilites', label: 'Disponibilités des centres', icon: 'fas fa-map-marker-alt', route: '/disponibilites' },
       ],
     },
   ],
@@ -164,7 +160,7 @@ export const MENU_CONFIG: MenuConfig = {
       section: 'Général',
       items: [
         { id: 'dashboard', label: 'Tableau de bord', icon: 'fas fa-tachometer-alt', route: '/dashboard' },
-        { id: 'expert', label: 'Expert Médical', icon: 'fas fa-comments', route: '/expert-medical' },
+        { id: 'expert', label: 'Expert Médical IA', icon: 'fas fa-robot', route: '/patient/expert-medical' },
       ],
     },
     {
@@ -172,20 +168,22 @@ export const MENU_CONFIG: MenuConfig = {
       items: [
         { id: 'dossiers', label: 'Mon dossier médical', icon: 'fas fa-folder-open', badge: 'Pa', route: '/patient/dossier' },
         { id: 'examens', label: 'Mes examens', icon: 'fas fa-file-medical', route: '/examens' },
+        { id: 'gestion-acces', label: 'Gestion des accès', icon: 'fas fa-shield-alt', badge: 'Pa', route: '/patient/gestion-acces' },
       ],
     },
     {
       section: 'Médicaments & Ordonnances',
       items: [
-        { id: 'medicaments', label: 'Analyser mes médicaments', icon: 'fas fa-pills', badge: 'Pa', route: '/patient/medicaments' },
-        { id: 'qr-verification', label: 'Vérification QR', icon: 'fas fa-qrcode', route: '/verification-qr' },
+        { id: 'medicaments', label: 'Mes médicaments', icon: 'fas fa-pills', badge: 'Pa', route: '/patient/medicaments' },
+        { id: 'ordonnances', label: 'Mes ordonnances', icon: 'fas fa-prescription', badge: 'Pa', route: '/patient/ordonnances' },
       ],
     },
     {
       section: 'Santé & Disponibilités',
       items: [
         { id: 'etat', label: 'Mon état de santé', icon: 'fas fa-heartbeat', badge: 'Pa', route: '/patient/etat-sante' },
-        { id: 'disponibilites', label: 'Disponibilités des centres', icon: 'fas fa-map-marker-alt', route: '/disponibilites' },
+        { id: 'rendez-vous', label: 'Mes rendez-vous', icon: 'fas fa-calendar-check', badge: 'Pa', route: '/patient/rendez-vous' },
+        { id: 'disponibilites', label: 'Centres de santé', icon: 'fas fa-map-marker-alt', route: '/patient/disponibilites' },
       ],
     },
   ],
