@@ -29,7 +29,7 @@ import JournalAchatPharmacie from '@features/patient/components/JournalAchatPhar
 // Medecin
 import DossiersPatients from '@features/doctor/components/DossiersPatients';
 import PatientRecordPage from '@features/doctor/components/PatientRecord/PatientRecordPage';
-import CasSpeciaux from '@features/doctor/components/CasSpeciaux';
+import MedicalCommunity from '@/features/doctor/components/MedicalCommunity';
 import Ordonnances from '@features/ordonnances/components/Ordonnances';
 import { DiagnosticIA } from '@features/diagnostic';
 import AppelVideoMedecin from '@features/doctor/components/AppelVideoMedecin';
@@ -207,7 +207,7 @@ const AppRoutes: React.FC = () => {
           path="medecin/cas-speciaux"
           element={
             <ProtectedRoute allowedRoles={['medecin']}>
-              <CasSpeciaux />
+              <MedicalCommunity />
             </ProtectedRoute>
           }
         />
