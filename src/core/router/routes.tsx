@@ -15,7 +15,7 @@ import Examens from '@features/examens/components/Examens';
 // Patient
 import HealthRecord from '@features/patient/components/HealthRecord';
 import PatientHealthTracking from '@/features/doctor/components/PatientHealthTracking';
-import Medicaments from '@features/doctor/components/Medicaments';
+import PatientTreatments from '@/features/doctor/components/PatientTreatments';
 import {
   GestionAcces,
   RendezVousPatient,
@@ -101,7 +101,7 @@ const AppRoutes: React.FC = () => {
           path="patient/medicaments"
           element={
             <ProtectedRoute allowedRoles={['patient']}>
-              <Medicaments />
+              <PatientTreatments />
             </ProtectedRoute>
           }
         />
