@@ -1,45 +1,35 @@
-import { CONSULTATIONS, HOSPITALISATIONS, PATIENTS } from "@shared/data/mock-data";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
+import { getOrdonnancesForPatient } from '@shared/data/mock-data';
 import {
   Stethoscope, BedDouble, Calendar, MapPin,
   Download, ChevronRight, FileText, Activity,
   Clock, User, ArrowLeft, Filter
 } from "lucide-react";
 
-type PassageType = "consultation" | "hospitalisation";
-
-interface TimelineEvent {
-  id: string;
-  type: PassageType;
-  date: string;
-  hopital: string;
-  motif: string;
-  diagnostic: string;
-  medecin?: string;
-  service?: string;
-  datesSejour?: string;
-  resumeSyndromique?: string;
-  examens?: string[];
-  traitement?: string;
-  evolution?: string;
-  prochainRdv?: string;
-  bilan?: string;
-}
+import { useHealthRecord } from "../hooks/useHealthRecord";
+import type { TimelineEvent, PassageType } from "../types/healthRecord.types";
 
 const HealthRecord = () => {
-  const patient = PATIENTS[0];
+  // temporary patientId; replace with auth/context when available
+  const patientId = 'pat_001';
+
+  const { patient: patientQuery, consultations, hospitalisations } = useHealthRecord(patientId);
+  const patient = patientQuery.data;
+
+  const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<"tous" | "consultation" | "hospitalisation">("tous");
 
   const allEvents: TimelineEvent[] = [
-    ...CONSULTATIONS.filter((c) => c.patientId === patient.id).map((c) => ({
+    ...(consultations.data ?? []).map((c) => ({
       id: c.id, type: "consultation" as const, date: c.date, hopital: c.hopital, motif: c.motif,
       diagnostic: c.diagnostic, medecin: c.medecin, resumeSyndromique: c.resumeSyndromique,
       examens: c.examensParacliniques, traitement: c.conduiteATenir, evolution: c.evolution,
     })),
-    ...HOSPITALISATIONS.filter((h) => h.patientId === patient.id).map((h) => ({
+    ...(hospitalisations.data ?? []).map((h) => ({
       id: h.id, type: "hospitalisation" as const, date: h.dateAdmission, hopital: h.hopital,
       motif: h.motif, diagnostic: h.diagnosticFinal, service: h.service,
       datesSejour: `${h.dateAdmission} → ${h.dateSortie || "En cours"}`,
@@ -52,6 +42,10 @@ const HealthRecord = () => {
     : allEvents.filter((e) => e.type === filterType);
 
   const selected = selectedEvent ? allEvents.find((e) => e.id === selectedEvent) : null;
+
+  if (!patient) {
+    return <div>Chargement...</div>;
+  }
 
   const consultCount = allEvents.filter((e) => e.type === "consultation").length;
   const hospitCount  = allEvents.filter((e) => e.type === "hospitalisation").length;
@@ -257,14 +251,36 @@ const HealthRecord = () => {
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {selected.examens.map((e) => (
-                      <span key={e} style={{
+                      <span key={e} onClick={() => navigate('/examens')} style={{
                         padding: "4px 14px", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600,
-                        background: "#eff6ff", color: "#3b82f6", border: "1px solid #bfdbfe",
+                        background: "#eff6ff", color: "#3b82f6", border: "1px solid #bfdbfe", cursor: 'pointer'
                       }}>{e}</span>
                     ))}
                   </div>
                 </div>
               )}
+
+              {/* Ordonnances liées (si disponibles) */}
+              {selected && (
+                <div style={{ padding: "0 1.75rem 1.75rem" }}>
+                  <div style={{ fontSize: "0.6875rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>
+                    Ordonnances associées
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {(() => {
+                      const orders = getOrdonnancesForPatient(patientId).filter((o) => o.consultationId === selected.id);
+                      if (orders.length === 0) return <span style={{ color: "#64748b" }}>Aucune</span>;
+                      return orders.map((o) => (
+                        <span key={o.id} onClick={() => navigate(`/patient/ordonnances/${o.id}`)} style={{
+                          padding: "4px 14px", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600,
+                          background: "#eff6ff", color: "#3b82f6", border: "1px solid #bfdbfe", cursor: "pointer"
+                        }}>{o.date}</span>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              )}
+
             </div>
           </motion.div>
 

@@ -794,6 +794,118 @@ export const getConsultationById = (id: string): ConsultationRecord | undefined 
 export const getExamenById = (id: string): ExamenPatient | undefined =>
   EXAMENS_PATIENT.find((e) => e.id === id);
 
+/* -----------------------------------------------------------------
+   UI-specific mocks used by patient/exam components
+   (these were previously hard‑coded inside component files)
+   kept here so that all fake data is centralized.
+----------------------------------------------------------------- */
+
+// simplified exam shape used in Features/Examens
+export interface UIExam {
+  patientId: string;
+  id: string;
+  nom: string;
+  date: string;
+  lieu: string;
+  statut: ExamStatus;
+  dureeEstimee: string;
+  contexte: ExamContext;
+  contextId: string;
+  resultat?: ExamResult;
+}
+
+export const MOCK_EXAMS: UIExam[] = [
+  {
+    patientId: 'pat_001',
+    id: "EX001", nom: "NFS (Numération Formule Sanguine)", date: "05/03/2026", lieu: "Laboratoire BioSanté, Paris",
+    statut: "Réalisé", dureeEstimee: "15 min", contexte: "Consultation", contextId: "C001",
+    resultat: { dateResultat: "06/03/2026", commentaireMedecin: "Résultats dans les limites normales", interpretation: "Pas d'anomalie détectée. Bilan sanguin satisfaisant.", fichiers: [{ nom: "NFS_060326.pdf", type: "pdf" }] }
+  },
+  {
+    patientId: 'pat_001',
+    id: "EX002", nom: "Fibroscopie gastrique", date: "20/03/2026", lieu: "CHU Saint-Louis, Paris",
+    statut: "Planifié", dureeEstimee: "30 min", contexte: "Consultation", contextId: "C001"
+  },
+  {
+    patientId: 'pat_001',
+    id: "EX003", nom: "Scanner abdominal", date: "12/06/2025", lieu: "CHU Saint-Louis, Paris",
+    statut: "Réalisé", dureeEstimee: "45 min", contexte: "Hospitalisation", contextId: "H001",
+    resultat: { dateResultat: "12/06/2025", commentaireMedecin: "Cholécystite chronique lithiasique confirmée", interpretation: "Vésicule biliaire lithiasique avec épaississement pariétal modéré.", fichiers: [{ nom: "Scanner_120625.pdf", type: "pdf" }, { nom: "Scanner_image.jpg", type: "image" }] }
+  },
+  {
+    patientId: 'pat_001',
+    id: "EX004", nom: "Bilan lipidique complet", date: "15/01/2026", lieu: "Laboratoire Cerba, Boulogne",
+    statut: "Réalisé", dureeEstimee: "10 min", contexte: "Consultation", contextId: "C002",
+    resultat: { dateResultat: "16/01/2026", commentaireMedecin: "Bilan lipidique satisfaisant", interpretation: "Tous les paramètres sont dans les normes.", fichiers: [{ nom: "Bilan_lipidique.pdf", type: "pdf" }] }
+  },
+  {
+    patientId: 'pat_001',
+    id: "EX005", nom: "Radio pulmonaire", date: "20/09/2025", lieu: "Clinique du Parc, Paris",
+    statut: "Réalisé", dureeEstimee: "10 min", contexte: "Consultation", contextId: "C003"
+  },
+  {
+    patientId: 'pat_001',
+    id: "EX006", nom: "IRM cérébrale", date: "10/04/2026", lieu: "Centre d'Imagerie Médicale, Lyon",
+    statut: "Confirmé", dureeEstimee: "45 min", contexte: "Consultation", contextId: "C001"
+  },
+  {
+    patientId: 'pat_001',
+    id: "EX007", nom: "Bilan hépatique", date: "01/07/2025", lieu: "Laboratoire BioSanté, Paris",
+    statut: "Reporté", dureeEstimee: "15 min", contexte: "Hospitalisation", contextId: "H001"
+  },
+];
+
+export const getMockExamsForPatient = (patientId: string): UIExam[] =>
+  MOCK_EXAMS.filter((e) => e.patientId === patientId);
+
+// prescriptions used in the "OrdonnancesPatient" component
+export interface UIPrescription {
+  patientId: string;
+  id: string;
+  medecin: string;
+  date: string;
+  contexte: "Consultation" | "Hospitalisation";
+  contextId: string;
+  medicaments: MedicamentWithPurchase[];
+}
+
+export const MOCK_PRESCRIPTIONS: UIPrescription[] = [
+  {
+    patientId: 'pat_001',
+    id: "ORD001", medecin: "Dr. Martin Dupont", date: "05/03/2026", contexte: "Consultation", contextId: "C001",
+    medicaments: [
+      { nom: "Oméprazole", dosage: "20mg", forme: "Gélule", posologie: "1 gélule le matin à jeun", duree: "28 jours", instructions: "À prendre 30 min avant le petit-déjeuner", achete: true },
+      { nom: "Gaviscon", dosage: "500mg", forme: "Sachet", posologie: "1 sachet après les 3 repas", duree: "14 jours", instructions: "Bien agiter avant utilisation", achete: false },
+    ]
+  },
+  {
+    patientId: 'pat_001',
+    id: "ORD002", medecin: "Dr. Sophie Laurent", date: "15/01/2026", contexte: "Consultation", contextId: "C002",
+    medicaments: [
+      { nom: "Amlodipine", dosage: "5mg", forme: "Comprimé", posologie: "1 comprimé le matin", duree: "6 mois", instructions: "Ne pas interrompre sans avis médical", achete: true },
+    ]
+  },
+  {
+    patientId: 'pat_001',
+    id: "ORD003", medecin: "Dr. Martin Dupont", date: "20/09/2025", contexte: "Consultation", contextId: "C003",
+    medicaments: [
+      { nom: "Paracétamol", dosage: "1g", forme: "Comprimé", posologie: "1 comprimé toutes les 6h si fièvre", duree: "5 jours", instructions: "Ne pas dépasser 4g par jour", achete: true },
+      { nom: "Carbocistéine", dosage: "750mg", forme: "Sirop", posologie: "1 cuillère à soupe 3x/jour", duree: "7 jours", instructions: "À prendre après les repas", achete: true },
+    ]
+  },
+  {
+    patientId: 'pat_001',
+    id: "ORD004", medecin: "Dr. Jean Moreau", date: "16/06/2025", contexte: "Hospitalisation", contextId: "H001",
+    medicaments: [
+      { nom: "Paracétamol", dosage: "1g", forme: "Comprimé", posologie: "1 comprimé toutes les 6h", duree: "5 jours", instructions: "Si douleur", achete: false },
+      { nom: "Pantoprazole", dosage: "40mg", forme: "Comprimé", posologie: "1 comprimé le matin", duree: "14 jours", instructions: "À jeun", achete: false },
+    ]
+  },
+];
+
+export const getMockPrescriptionsForPatient = (patientId: string): UIPrescription[] =>
+  MOCK_PRESCRIPTIONS.filter((p) => p.patientId === patientId);
+
 /** Ordonnance par ID */
 export const getOrdonnanceById = (id: string): OrdonnanceRecord | undefined =>
   ORDONNANCES_RECORD.find((o) => o.id === id);

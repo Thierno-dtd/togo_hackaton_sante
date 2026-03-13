@@ -79,6 +79,7 @@ const AppRoutes: React.FC = () => {
         {/* Common routes */}
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="examens" element={<Examens />} />
+        <Route path="examens/:examId" element={<Examens />} />
 
         {/* Patient routes */}
         <Route
@@ -131,6 +132,14 @@ const AppRoutes: React.FC = () => {
         />
         <Route
           path="patient/ordonnances"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <OrdonnancesPatient />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="patient/ordonnances/:ordonnanceId"
           element={
             <ProtectedRoute allowedRoles={['patient']}>
               <OrdonnancesPatient />

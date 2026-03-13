@@ -12,70 +12,16 @@ export const rendezVousService = {
   getRendezVous: async (patientId: string): Promise<RendezVous[]> => {
     // TODO: return apiGet<RendezVous[]>(`/patients/${patientId}/rendez-vous`);
     await new Promise((r) => setTimeout(r, 400));
-
-    return [
-      {
-        id: 'rdv_1',
-        medecinId: 'med_001',
-        medecinNom: 'Dr. BEGNI Touna',
-        specialite: 'Cardiologie',
-        date: '2024-03-25',
-        heure: '09:30',
-        type: 'consultation',
-        status: 'confirme',
-        lieu: 'Cabinet médical - 15 rue de la Santé',
-        motif: 'Suivi cardiologique trimestriel',
-        avatar: 'BT',
-      },
-      {
-        id: 'rdv_2',
-        medecinId: 'med_002',
-        medecinNom: 'Dr. Prisca KANGNI',
-        specialite: 'Médecine générale',
-        date: '2024-04-02',
-        heure: '14:00',
-        type: 'suivi',
-        status: 'planifie',
-        lieu: 'Clinique Pasteur - Salle 12',
-        motif: 'Bilan de santé annuel',
-        avatar: 'PK',
-      },
-      {
-        id: 'rdv_3',
-        medecinId: 'med_003',
-        medecinNom: 'Dr. A. MBARGA',
-        specialite: 'Dermatologie',
-        date: '2024-03-20',
-        heure: '11:00',
-        type: 'consultation',
-        status: 'termine',
-        lieu: 'Hôpital Central - Bâtiment B',
-        motif: 'Consultation dermatologique',
-        notes: 'RAS - Peau en bon état général',
-        avatar: 'AM',
-      },
-      {
-        id: 'rdv_4',
-        medecinId: 'med_001',
-        medecinNom: 'Dr. BEGNI Touna',
-        specialite: 'Cardiologie',
-        date: '2024-03-18',
-        heure: '08:30',
-        type: 'teleconsultation',
-        status: 'termine',
-        lieu: 'En ligne',
-        motif: 'Suivi résultats ECG',
-        notes: 'Résultats normaux, continuer traitement',
-        avatar: 'BT',
-      },
-    ];
+    // use centralized mock-data helper
+    const { getRendezVousForPatient } = await import("@shared/data/mock-data");
+    return getRendezVousForPatient(patientId);
   },
 
   /**
    * Créer un nouveau rendez-vous
    */
+  // keep existing create stub for now, may be replaced with mock-data writing logic later
   creerRendezVous: async (patientId: string, dto: CreateRendezVousDTO): Promise<RendezVous> => {
-    // TODO: return apiPost<RendezVous>(`/patients/${patientId}/rendez-vous`, dto);
     await new Promise((r) => setTimeout(r, 400));
     return {
       id: `rdv_${Date.now()}`,

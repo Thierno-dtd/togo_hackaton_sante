@@ -41,6 +41,8 @@ export type {
 export { etatSanteService } from './services/etat-sante.service';
 export { rendezVousService } from './services/rendez-vous.service';
 export { ordonnancePatientService } from './services/ordonnance-patient.service';
+export { healthRecordService } from './services/healthRecord.service';
+export { prescriptionService } from './services/prescription.service';
 export { healthCenterService } from './services/health-center.service';
 export { expertMedicalService } from './services/expert-medical.service';
 export { medicamentService } from './services/medicament.service';
@@ -50,6 +52,8 @@ export { gestionAccesService } from './services/gestion-acces.service';
 export { useEtatSante, useAjouterMesure, useMarquerAlerteLue } from './hooks/useEtatSante';
 export { useRendezVous, useCreerRendezVous, useModifierRendezVous, useAnnulerRendezVous } from './hooks/useRendezVous';
 export { useOrdonnancesPatient, useOrdonnanceDetail, useGenererQRCode } from './hooks/useOrdonnancePatient';
+export { useHealthRecord } from './hooks/useHealthRecord';
+export { usePrescriptions, usePrescriptionDetail } from './hooks/usePrescriptions';
 export { useHealthCenters, useHealthCenter } from './hooks/useHealthCenters';
 export { useConversations, useSendMessage, useCreerConversation } from './hooks/useExpertMedical';
 export { useMedicamentsSuivi, useRappelsMedicaments, useMarquerPrise } from './hooks/useMedicamentsSuivi';
@@ -68,3 +72,4 @@ export { default as ExpertMedicalPatient } from './components/ExpertMedicalPatie
 export { default as RendezVousPatient } from './components/PatientAppointments';
 export { default as OrdonnancesPatient } from './components/OrdonnancesPatient';
 export { default as DisponibilitesPatient } from './components/DisponibilitesPharmacy';
+export { default as HealthRecord } from './components/HealthRecord';
